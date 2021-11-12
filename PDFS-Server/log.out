@@ -1,0 +1,11 @@
+2022/02/01 15:03:04 Loading config.
+2022/02/01 15:03:04 Listen addr: 10.0.4.12:11111
+2022/02/01 15:03:04 Server addr: 43.154.178.243:11111
+2022/02/01 15:03:04 Handler addr: 43.154.178.243:9999
+2022/02/01 15:03:04 Redis addr: 127.0.0.1:6379
+2022/02/01 15:03:04 Blocks path: /usr/local/PDFS/blocks
+2022/02/01 15:03:04 Blocks directory founded.
+2022/02/01 15:03:04 Connecting to redis: 127.0.0.1:6379
+2022/02/01 15:03:04 Connect to redis success.
+2022/02/01 15:03:04 Server init success.
+2022/02/01 15:03:04 Server start serving,listening to: 10.0.4.12:11111

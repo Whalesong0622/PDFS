@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="UnattendedHostPersistenceState">
+    <option name="openedFilesInfos">
+      <list>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="0" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/README.md" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="767" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/main.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="109" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/DB/redisDB.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="0" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/config.json" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="13" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/tcp/operator.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="395" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/tcp/depackage.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="314" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/PDFS-Handler/tcp/conn.go" />
+        </OpenedFileInfo>
+      </list>
+    </option>
+  </component>
+</project>

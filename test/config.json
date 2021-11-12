@@ -1,0 +1,5 @@
+{
+  "blocks_path": "/Users/whaleshark/Downloads/pdfs/blocks/",
+  "server_addr": "127.0.0.1:11111",
+  "handler_addr": "127.0.0.1:9999"
+}

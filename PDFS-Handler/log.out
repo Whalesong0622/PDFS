@@ -1,0 +1,9 @@
+2022/02/01 13:35:54 Loading config.
+2022/02/01 13:35:54 Handler addr: 43.154.178.243:9999
+2022/02/01 13:35:54 Listen addr: 43.154.178.243:9999
+2022/02/01 13:35:54 Server addr: 43.154.178.243:11111
+2022/02/01 13:35:54 Redis addr: 127.0.0.1:6379
+2022/02/01 13:35:54 Namespace path: /usr/local/PDFS/namespace
+2022/02/01 13:35:54 Found namespace dir.
+2022/02/01 13:35:54 Server init success.
+2022/02/01 13:35:54 Server start serving,listening to: 10.0.4.12:9999
