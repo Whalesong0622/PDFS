@@ -1,9 +1,10 @@
 package main
 
 import (
+	"PDFS-Server/api"
 	"fmt"
-	"io/ioutil"
 	"os"
+	_ "strconv"
 	"strings"
 )
 
@@ -14,14 +15,18 @@ func main(){
 		return r == '/'
 	})
 	fmt.Println(words[len(words)-1])
-	if len(Args) == 2{
-		File,err := ioutil.ReadFile(Args[1])
-		if err != nil{
-			fmt.Println("Read file failed:",err)
+	if len(Args) == 2 {
+		err := api.WriteInDistributed("pdfs", Args[1])
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
-		Path:= strings.Join([]string{"/Users/whaleshark/Downloads/",words[len(words)-1]},"")
-		NewFile,err := os.Create(Path)
-		NewFile.Write(File)
+		FileName := words[len(words)-1]
+		Path := strings.Join([]string{"/Users/whaleshark/Downloads/", "pdfs", "/", FileName}, "")
+		err = api.Read(Path, FileName,17)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
-
 }
