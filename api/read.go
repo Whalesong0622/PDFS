@@ -1,6 +1,7 @@
 package api
 
 import (
+	"PDFS-Server/common"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -8,8 +9,11 @@ import (
 	"strings"
 )
 
-func Read(path string,fileName string,blockNums int) error {
-	writePath := strings.Join([]string{"/Users/whaleshark/Downloads/", "pdfs", "/", fileName}, "")
+var downloadPath = "/Users/whaleshark/Downloads/pdfs/download/"
+
+func Read(path string,blockNums int) error {
+
+	writePath := strings.Join([]string{downloadPath, common.GetFileName(path)}, "")
 	toWrite,err := os.Create(writePath)
 	if err != nil{
 		fmt.Println(err)
@@ -26,4 +30,9 @@ func Read(path string,fileName string,blockNums int) error {
 		_,err = toWrite.WriteAt(distributedFile,n)
 	}
 	return nil
+}
+
+func ReadFile(path string)([]byte,error){
+	file,err := ioutil.ReadFile(path)
+	return file,err
 }

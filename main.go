@@ -2,11 +2,13 @@ package main
 
 import (
 	"PDFS-Server/api"
+	"PDFS-Server/common"
 	"fmt"
 	"os"
-	_ "strconv"
 	"strings"
 )
+
+var blocksPath = "/Users/whaleshark/Downloads/pdfs/blocks/"
 
 func main(){
 	Args := os.Args
@@ -14,19 +16,22 @@ func main(){
 	words := strings.FieldsFunc(Args[1],func (r rune)bool{
 		return r == '/'
 	})
-	fmt.Println(words[len(words)-1])
+	fmt.Println("reading ",words[len(words)-1]," ...")
+
 	if len(Args) == 2 {
-		err := api.WriteInDistributed("pdfs", Args[1])
+		fileName := common.GetFileName(Args[1])
+		err := api.Write(Args[1],blocksPath)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		FileName := words[len(words)-1]
-		Path := strings.Join([]string{"/Users/whaleshark/Downloads/", "pdfs", "/", FileName}, "")
-		err = api.Read(Path, FileName,17)
-		if err != nil {
+		path := strings.Join([]string{blocksPath,"/",fileName},"")
+		err = api.Read(path,common.GetFileBlockNums(Args[1]))
+		if err != nil{
 			fmt.Println(err)
 			return
 		}
+	}else{
+		fmt.Println("Input args error")
 	}
 }

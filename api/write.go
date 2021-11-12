@@ -1,7 +1,10 @@
 package api
 
 import (
+	"PDFS-Server/common"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -10,36 +13,45 @@ import (
 
 const BlockSize int = 64000000 //64MB
 
-func WriteInDistributed(user string,inPath string,File []byte) error {
-	// fmt.Println(InPath)
-	words := strings.FieldsFunc(inPath,func (r rune)bool{
-		return r == '/'
-	})
-	fileName := words[len(words)-1]
-	files := split(File)
-	blockNums := (len(File)+ BlockSize - 1)/ BlockSize
+func Write(filePath string,writePath string)error{
+	file,err := ioutil.ReadFile(filePath)
+	if err != nil{
+		return err
+	}
 
+	path := strings.Join([]string{writePath,common.GetFileName(filePath)},"")
+	fmt.Println("To write file at ",path)
+	err = WriteInDistributed("whaleshark",path,file)
+	return err
+}
+
+func WriteInDistributed(user string,path string,file []byte) error {
+	// fileName := common.GetFileName(path)
+	files := split(file)
+	blockNums := (len(file)+ BlockSize - 1)/ BlockSize
 	for i := 0;i < blockNums;i++ {
-		Path:= strings.Join([]string{"/Users/whaleshark/Downloads/",user,"/",fileName,"-",strconv.Itoa(i)},"")
-		NewFile,err := os.Create(Path)
+		// writePath:= strings.Join([]string{user,"/",path,"-",strconv.Itoa(i)},"")
+		testPath := strings.Join([]string{path,"-",strconv.Itoa(i)},"")
+
+		NewFile,err := os.Create(testPath)
 		if err != nil{
-			fmt.Println(err)
+			log.Println(err)
 			return err
 		}
 		NewFile.Write(files[i])
+		NewFile.Close()
 	}
-
 	return nil
 }
 
-func split(File []byte) [][]byte{
+func split(file []byte) [][]byte{
 	Files := make([][]byte,0)
-	time := (len(File)+ BlockSize -1)/ BlockSize
+	time := (len(file)+ BlockSize -1)/ BlockSize
 	for i := 1;i <= time;i++{
 		if(i == time){
-			Files = append(Files,File[(i-1)*BlockSize:])
+			Files = append(Files,file[(i-1)*BlockSize:])
 		}else {
-			Files = append(Files, File[(i-1)*BlockSize:i*BlockSize])
+			Files = append(Files, file[(i-1)*BlockSize:i*BlockSize])
 		}
 	}
 	return Files
