@@ -71,7 +71,6 @@ func revFile(fileName string, conn net.Conn) {
 	}
 }
 func main() {
-	// 创建一个服务器
 	Server, err := net.Listen("tcp", "127.0.0.1:8000")
 	if err != nil {
 		fmt.Println("net.Listen err =", err)
@@ -109,4 +108,6 @@ func main() {
 		}
 
 	}
+
+
 }
