@@ -20,18 +20,14 @@ func getFileTreeInLine(path string) {
 			files = append(files[:i], files[i+1:]...)
 		}
 	}
-	dirs := make([]string, 0)
 
-	// 先打印文件
+	dirs := make([]string, 0)
 	for _, fi := range files {
 		if !fi.IsDir() {
 			dirs = append(dirs, fi.Name())
 		}
 	}
-
 	lenFile := len(dirs)
-
-	// 再打印文件夹
 	for _, fi := range files {
 		if fi.IsDir() {
 			dirs = append(dirs, fi.Name())

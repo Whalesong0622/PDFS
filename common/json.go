@@ -11,7 +11,7 @@ type Config struct {
 	blocksPath   string `json:"blocks_path"`
 }
 
-func GetBlocksConfig() string {
+func GetBlocksPathConfig() string {
 	jsonFile, err := os.Open("./config.json")
 	if err != nil {
 
@@ -23,10 +23,14 @@ func GetBlocksConfig() string {
 	var Conf map[string]interface{}
 	json.Unmarshal(fileValue, &Conf)
 
-	return Conf["blocks_path"].(string)
+	path := Conf["blocks_path"].(string)
+	if path[len(path)-1] != '/' {
+		path += "/"
+	}
+	return path
 }
 
-func GetDownloadConfig() string {
+func GetDownloadPathConfig() string {
 	jsonFile, err := os.Open("./config.json")
 	if err != nil {
 
@@ -38,5 +42,9 @@ func GetDownloadConfig() string {
 	var Conf map[string]interface{}
 	json.Unmarshal(fileValue, &Conf)
 
-	return Conf["download_path"].(string)
+	path := Conf["download_path"].(string)
+	if path[len(path)-1] != '/' {
+		path += "/"
+	}
+	return path
 }
