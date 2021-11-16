@@ -1,7 +1,7 @@
 package api
 
 import (
-	"PDFS-Server/PDFS-Handler/common"
+	"PDFS-Handler/common"
 	"fmt"
 	"io/ioutil"
 	"log"

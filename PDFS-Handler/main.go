@@ -1,7 +1,7 @@
 package main
 
 import (
-	"PDFS-Server/common"
+	"PDFS-Handler/common"
 	"fmt"
 	"io"
 	"net"
@@ -103,8 +103,8 @@ func main() {
 		//return
 	//}
 
-	Server, err := net.Listen("tcp", "127.0.0.1:8000")
-	// Server, err := net.Listen("tcp","172.16.7.94:9999")
+	/// Server, err := net.Listen("tcp", "127.0.0.1:8000")
+	Server, err := net.Listen("tcp","172.16.7.94:9999")
 	if err != nil {
 		fmt.Println("net.Listen err =", err)
 		return
@@ -117,6 +117,7 @@ func main() {
 			fmt.Println("Server.Accept err =", err)
 			return
 		}
+		fmt.Println("handling request")
 		go handleConn(conn)
 	}
 }

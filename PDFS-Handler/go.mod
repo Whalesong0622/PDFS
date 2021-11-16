@@ -1,4 +1,4 @@
-module PDFS-Server
+module PDFS-Handler
 
 go 1.16
 

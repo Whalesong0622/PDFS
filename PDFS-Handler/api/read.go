@@ -1,7 +1,7 @@
 package api
 
 import (
-	"PDFS-Server/PDFS-Handler/common"
+	"PDFS-Handler/common"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -10,7 +10,7 @@ import (
 )
 
 func Read(path string, blockNums int) error {
-	downloadPath := common.GetDownloadConfig()
+	downloadPath := common.GetDownloadPathConfig()
 
 	writePath := strings.Join([]string{downloadPath, common.GetFileName(path)}, "")
 	toWrite, err := os.Create(writePath)
