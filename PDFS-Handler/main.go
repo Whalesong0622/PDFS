@@ -48,6 +48,7 @@ func sendFile(fileName string, conn net.Conn) {
 	defer conn.Close()
 	blockPath = common.GetBlocksPathConfig()
 	path := strings.Join([]string{blockPath,fileName},"")
+	fmt.Println(path)
 	fs, err := os.Open(path)
 	defer fs.Close()
 	if err != nil {
@@ -55,13 +56,19 @@ func sendFile(fileName string, conn net.Conn) {
 		return
 	}
 	buf := make([]byte, 1024*10)
-	for {
-		n, err1 := fs.Read(buf)
-		if err1 != nil {
-			fmt.Println("fs.Open err = ", err1)
-			return
+	n, err := conn.Read(buf)
+	if err != nil{
+		fmt.Println(err)
+	}
+	if "ok" == string(buf[:n]){
+		for {
+			n, err1 := fs.Read(buf)
+			if err1 != nil {
+				fmt.Println("fs.Open err = ", err1)
+				return
+			}
+			conn.Write(buf[:n])
 		}
-		conn.Write(buf[:n])
 	}
 }
 
@@ -74,9 +81,10 @@ func handleConn(conn net.Conn) {
 	}
 	op := string(buf[:n])
 	// 返回ok
+	fmt.Println("resented ok")
 	conn.Write([]byte("ok"))
 
-	if op == WRITE_OP { //上传文件
+	/*if op == WRITE_OP { //上传文件
 		n, err := conn.Read(buf)
 		if err != nil {
 			fmt.Println("conn.Read err =", err)
@@ -93,14 +101,26 @@ func handleConn(conn net.Conn) {
 		name := string(buf[:n])
 		conn.Write([]byte("ok"))
 		sendFile(name, conn)
+	}*/
+	n, err = conn.Read(buf)
+	if err != nil {
+		fmt.Println("conn.Read err =", err)
 	}
+	name := string(buf[:n])
+	conn.Write([]byte("ok"))
+	if op == WRITE_OP{
+		revFile(name, conn)
+	}else{
+		sendFile(name,conn)
+	}
+
 }
 
 func main() {
 	//err := os.MkdirAll(blockPath,os.ModePerm)
 	//if err != nil{
-		//log.Println("Create blockPath error:",err)
-		//return
+	//log.Println("Create blockPath error:",err)
+	//return
 	//}
 
 	/// Server, err := net.Listen("tcp", "127.0.0.1:8000")
