@@ -1,37 +1,53 @@
 package api
 
 import (
-	"PDFS-Handler/common"
-	"fmt"
-	"io/ioutil"
+	"PDFS-Server/common"
+	"io"
+	"log"
+	"net"
 	"os"
-	"strconv"
 	"strings"
+	"time"
 )
 
-func Read(path string, blockNums int) error {
-	downloadPath := common.GetDownloadPathConfig()
-
-	writePath := strings.Join([]string{downloadPath, common.GetFileName(path)}, "")
-	toWrite, err := os.Create(writePath)
+func SendFile(fileName string, conn net.Conn) {
+	defer conn.Close()
+	blockPath = common.GetBlocksPathConfig()
+	path := strings.Join([]string{blockPath, fileName}, "")
+	file, err := os.Open(path)
+	defer file.Close()
 	if err != nil {
-		fmt.Println(err)
-		return err
+		log.Println("os.Open err =", err)
+		return
 	}
-	for i := 0; i < blockNums; i++ {
-		Path := strings.Join([]string{path, "-", strconv.Itoa(i)}, "")
-		distributedFile, err := ioutil.ReadFile(Path)
-		if err != nil {
-			println(err)
-			return err
-		}
-		n, err := toWrite.Seek(0, 2)
-		_, err = toWrite.WriteAt(distributedFile, n)
-	}
-	return nil
-}
 
-func ReadFile(path string) ([]byte, error) {
-	file, err := ioutil.ReadFile(path)
-	return file, err
+	buf := make([]byte, 1024*1024*64)
+	n, err := conn.Read(buf)
+	if err != nil {
+		log.Println(err)
+	}
+
+	now := time.Now()
+	begin := now.Local().UnixNano() / (1000 * 1000)
+
+	if "ok" == string(buf[:n]) {
+		for {
+			n, err := file.Read(buf)
+			if err != nil {
+				if err == io.EOF {
+					end := time.Now().Local().UnixNano() / (1000 * 1000)
+					info, err := file.Stat()
+					if err != nil {
+						log.Println("Get file infos err:", err, "maybe file has borken.")
+					}
+					log.Printf("Send file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+					return
+				} else {
+					log.Println("fs.Open err = ", err)
+					return
+				}
+			}
+			conn.Write(buf[:n])
+		}
+	}
 }

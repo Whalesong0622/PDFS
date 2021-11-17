@@ -1,57 +1,58 @@
 package api
 
 import (
-	"PDFS-Handler/common"
-	"fmt"
-	"io/ioutil"
+	"PDFS-Server/common"
+	"io"
 	"log"
+	"net"
 	"os"
-	"strconv"
 	"strings"
+	"time"
 )
 
-const BlockSize int = 64000000 //64MB
+var blockPath string
 
-func Write(filePath string, writePath string) error {
-	file, err := ioutil.ReadFile(filePath)
+func RevFile(fileName string, conn net.Conn) {
+	defer conn.Close()
+	blockPath = common.GetBlocksPathConfig()
+	path := strings.Join([]string{blockPath, fileName}, "")
+	file, err := os.Create(path)
+	defer file.Close()
 	if err != nil {
-		return err
+		log.Println("os.Create err =", err)
+		return
 	}
 
-	path := strings.Join([]string{writePath, common.GetFileName(filePath)}, "")
-	fmt.Println("To write file at ", path)
-	err = WriteInDistributed("whaleshark", path, file)
-	return err
-}
+	now := time.Now()
+	begin := now.Local().UnixNano() / (1000 * 1000)
 
-func WriteInDistributed(user string, path string, file []byte) error {
-	// fileName := common.GetFileName(path)
-	files := split(file)
-	blockNums := (len(file) + BlockSize - 1) / BlockSize
-	for i := 0; i < blockNums; i++ {
-		// writePath:= strings.Join([]string{user,"/",path,"-",strconv.Itoa(i)},"")
-		testPath := strings.Join([]string{path, "-", strconv.Itoa(i)}, "")
-
-		NewFile, err := os.Create(testPath)
+	// 拿到数据
+	buf := make([]byte, 1024*1024*64)
+	for {
+		n, err := conn.Read(buf)
 		if err != nil {
-			log.Println(err)
-			return err
+			if err == io.EOF {
+				end := time.Now().Local().UnixNano() / (1000 * 1000)
+				info, err := file.Stat()
+				if err != nil {
+					log.Println("Get file infos err:", err, "maybe file has borken.")
+				}
+				log.Printf("Send file %s to %s ended!The file has %.3f mb， Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+				return
+			} else {
+				log.Println("conn.Read err =", err)
+				return
+			}
 		}
-		NewFile.Write(files[i])
-		NewFile.Close()
-	}
-	return nil
-}
-
-func split(file []byte) [][]byte {
-	Files := make([][]byte, 0)
-	time := (len(file) + BlockSize - 1) / BlockSize
-	for i := 1; i <= time; i++ {
-		if i == time {
-			Files = append(Files, file[(i-1)*BlockSize:])
-		} else {
-			Files = append(Files, file[(i-1)*BlockSize:i*BlockSize])
+		if n == 0 {
+			end := time.Now().Local().UnixNano() / (1000 * 1000)
+			info, err := file.Stat()
+			if err != nil {
+				log.Println("Get file infos err:", err, "maybe file has borken.")
+			}
+			log.Printf("Send file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+			return
 		}
+		file.Write(buf[:n])
 	}
-	return Files
 }
