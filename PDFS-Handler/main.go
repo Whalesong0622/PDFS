@@ -51,7 +51,8 @@ func handleConn(conn net.Conn) {
 		log.Println("Sending file", name, "from", conn.RemoteAddr(), ",reply ok")
 		conn.Write([]byte("ok"))
 
-		api.Read(name, conn)
+		blockNums := 0
+		api.Read(name, conn,blockNums)
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
 		conn.Write([]byte("error"))

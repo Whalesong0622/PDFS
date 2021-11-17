@@ -1,14 +1,13 @@
 package api
 
 import (
-	"PDFS-Handler/common"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
 	"strconv"
-	"strings"
+	"sync"
 	"time"
 )
 
@@ -17,14 +16,6 @@ var blockPath string
 
 func Write(fileName string, conn net.Conn) {
 	defer conn.Close()
-	blockPath = common.GetBlocksPathConfig()
-	path := strings.Join([]string{blockPath, fileName}, "")
-	file, err := os.Create(path)
-	defer file.Close()
-	if err != nil {
-		log.Println("os.Create err =", err)
-		return
-	}
 
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
@@ -33,16 +24,16 @@ func Write(fileName string, conn net.Conn) {
 	buf := make([]byte, 1024*1024)
 	buf2 := make([]byte,0)
 	cur := 0
+
+	wc := sync.WaitGroup{}
 	for {
 		n, err := conn.Read(buf)
 		if err != nil {
 			if err == io.EOF {
-				end := time.Now().Local().UnixNano() / (1000 * 1000)
-				info, err := file.Stat()
 				if err != nil {
 					log.Println("Get file infos err:", err, "maybe file has borken.")
 				}
-				log.Printf("Send file %s to %s ended!The file has %.3f mb， Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+				log.Printf("Send file %s to %s ended!", fileName, conn.RemoteAddr().String())
 				break
 			} else {
 				log.Println("conn.Read err =", err)
@@ -50,12 +41,6 @@ func Write(fileName string, conn net.Conn) {
 			}
 		}
 		if n == 0 {
-			end := time.Now().Local().UnixNano() / (1000 * 1000)
-			info, err := file.Stat()
-			if err != nil {
-				log.Println("Get file infos err:", err, "maybe file has borken.")
-			}
-			log.Printf("Send file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
 			break
 		}
 		// file.Write(buf[:n])
@@ -63,17 +48,21 @@ func Write(fileName string, conn net.Conn) {
 		if len(buf2) >= BlockSize {
 			tmpFileName := fileName + "-" + strconv.Itoa(cur)
 			cur++
-			go WriteToServer(tmpFileName,buf2[:BlockSize])
+			wc.Add(1)
+			go WriteToServer(tmpFileName,buf2[:BlockSize],&wc)
 			buf2 = buf2[BlockSize:]
 		}
 	}
-	if len(buf2) > 0{
+	if len(buf2) > 0 {
 		tmpFileName := fileName + "-" + strconv.Itoa(cur)
-		go WriteToServer(tmpFileName,buf2)
+		go WriteToServer(tmpFileName,buf2,&wc)
 	}
+	wc.Wait()
+	end := time.Now().Local().UnixNano() / (1000 * 1000)
+	log.Printf("Send file %s to %s ended! Timecost: %d ms", fileName, conn.RemoteAddr().String(), end-begin)
 }
 
-func WriteToServer(fileName string,file []byte){
+func WriteToServer(fileName string,file []byte,wc *sync.WaitGroup){
 	conn, err := net.Dial("tcp", "43.132.181.175:11111")
 	defer conn.Close()
 	if err != nil {
@@ -89,7 +78,6 @@ func WriteToServer(fileName string,file []byte){
 	}
 	fmt.Println(string(buf[:n]))
 	if "ok" == string(buf[:n]) {
-		fmt.Println("成功连接，请输入需要上传的文件的路径")
 		path := fileName
 		// 获取文件名,
 		info, err := os.Stat(path)
@@ -110,4 +98,5 @@ func WriteToServer(fileName string,file []byte){
 			conn.Write(file)
 		}
 	}
+	wc.Add(-1)
 }
