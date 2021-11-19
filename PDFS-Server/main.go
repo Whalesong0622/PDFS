@@ -1,18 +1,18 @@
 package main
 
 import (
+	"PDFS-Server/common"
 	"PDFS-Server/heartbeat"
 	"PDFS-Server/tcp"
-	"PDFS-Server/common"
 	"log"
 	"net"
 	"os"
 )
 
-var addr = "10.0.4.4:11111"
-//var addr = "127.0.0.1:11111"
+//var addr = "10.0.4.4:11111"
+var addr = "127.0.0.1:11111"
 var blockPath string
-
+var ServerIp string
 
 
 func main() {
@@ -25,6 +25,9 @@ func main() {
 			return
 		}
 	}
+
+	ServerIp = common.GetIpConfig()
+	heartbeat.RedisInit()
 
 	Server, err := net.Listen("tcp", addr)
 	if err != nil {

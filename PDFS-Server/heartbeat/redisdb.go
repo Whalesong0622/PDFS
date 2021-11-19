@@ -1,6 +1,7 @@
 package heartbeat
 
 import (
+	"PDFS-Server/common"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"os"
@@ -13,8 +14,9 @@ var (
 	Pool *redis.Pool
 )
 
-func init() {
-	redisHost := ":6379"
+func RedisInit() {
+	master := common.GetMasterIpConfig()
+	redisHost := master+":6379"
 	Pool = newPool(redisHost)
 	close()
 }
@@ -64,4 +66,12 @@ func Get(key string) ([]byte, error) {
 		return data, fmt.Errorf("error get key %s: %v", key, err)
 	}
 	return data, err
+}
+
+func updateBlockInfo(path string,ip string,unixTime int64) ([]byte,error){
+	conn := Pool.Get()
+	defer conn.Close()
+
+	reply, err := redis.Bytes(conn.Do("HMSET", path,ip,unixTime))
+	return reply,err
 }

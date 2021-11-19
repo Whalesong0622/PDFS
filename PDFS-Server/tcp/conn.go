@@ -28,11 +28,11 @@ func HandleConn(conn net.Conn) {
 			log.Println("conn.Read err =", err)
 		}
 
-		name := string(buf[:n])
-		log.Println("Receiving file", name, "from", conn.RemoteAddr().String(), ",reply ok")
+		fileName := string(buf[:n])
+		log.Println("Receiving file", fileName, "from", conn.RemoteAddr().String(), ",reply ok")
 		conn.Write([]byte("ok"))
 
-		api.RevFile(name, conn)
+		api.RevFile(fileName, conn)
 	} else if op == READ_OP {
 		log.Println("Reply ok to", conn.RemoteAddr().String())
 		conn.Write([]byte("ok"))
