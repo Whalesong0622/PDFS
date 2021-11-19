@@ -1,8 +1,7 @@
-package heartbeat
+package DB
 
 import (
-	"PDFS-Server/common"
-	"fmt"
+	"PDFS-Handler/common"
 	"github.com/gomodule/redigo/redis"
 	"os"
 	"os/signal"
@@ -16,9 +15,9 @@ var (
 
 func RedisInit() {
 	master := common.GetMasterIpConfig()
-	redisHost := master+":6379"
+	redisHost := master + ":6379"
 	Pool = newPool(redisHost)
-	close()
+	c()
 }
 
 func newPool(server string) *redis.Pool {
@@ -43,35 +42,36 @@ func newPool(server string) *redis.Pool {
 	}
 }
 
-func close() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
-	signal.Notify(c, syscall.SIGKILL)
+func c() {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	signal.Notify(signalChan, syscall.SIGTERM)
+	signal.Notify(signalChan, syscall.SIGKILL)
 	go func() {
-		<-c
+		<-signalChan
 		Pool.Close()
 		os.Exit(0)
 	}()
 }
 
-func Get(key string) ([]byte, error) {
-
+func GetFileBlockNums(path string) (int, error) {
 	conn := Pool.Get()
 	defer conn.Close()
 
-	var data []byte
-	data, err := redis.Bytes(conn.Do("GET", key))
+	reply, err := conn.Do("HGET", path, "blocknums")
 	if err != nil {
-		return data, fmt.Errorf("error get key %s: %v", key, err)
+		return 0, err
 	}
-	return data, err
+	return reply.(int), err
 }
 
-func updateBlockInfo(path string,ip string,unixTime int64) ([]byte,error){
+func GetBlockIpList(BlockName string)([]string,error){
 	conn := Pool.Get()
 	defer conn.Close()
 
-	reply, err := redis.Bytes(conn.Do("HMSET", path,ip,unixTime))
-	return reply,err
+	reply, err := conn.Do("HKEYS",BlockName)
+	if err != nil{
+		return nil,err
+	}
+	return reply.([]string),err
 }

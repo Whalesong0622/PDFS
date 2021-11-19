@@ -2,78 +2,33 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+	"github.com/go-ping/ping"
 	"time"
-
-	"github.com/gomodule/redigo/redis"
 )
 
-var (
-	Pool *redis.Pool
-)
+func deadLine(ch chan int){
 
-func Init() {
-	redisHost := ":6379"
-	Pool = newPool(redisHost)
-	c()
 }
-
-func newPool(server string) *redis.Pool {
-
-	return &redis.Pool{
-
-		MaxIdle:     3,
-		IdleTimeout: 240 * time.Second,
-
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", server)
-			if err != nil {
-				return nil, err
-			}
-			return c, err
-		},
-
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-	}
-}
-
-func c() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	signal.Notify(c, syscall.SIGTERM)
-	signal.Notify(c, syscall.SIGKILL)
-	go func() {
-		<-c
-		Pool.Close()
-		os.Exit(0)
-	}()
-}
-
-func Get(key string) ([]string, error) {
-
-	conn := Pool.Get()
-	defer conn.Close()
-
-	var data []string
-	data, err := redis.Strings(conn.Do("HGETALL", key))
-	if err != nil {
-		return data, fmt.Errorf("error get key %s: %v", key, err)
-	}
-	return data, err
-}
-
 func main() {
-	Init()
-	test, err := Get("FileToServer")
-	fmt.Println(test, err)
-	conn := Pool.Get()
-	defer conn.Close()
-	reply,err := conn.Do("HSET","FileToServer","123","456")
-	fmt.Println(reply, err)
+	ch := make(chan int)
+	go deadLine(ch)
+	pinger, err := ping.NewPinger("www.google.com")
+	if err != nil {
+		panic(err)
+	}
+	pinger.Count = 3
+	pinger.Timeout = time.Second*6
+	fmt.Println("11111")
+	err = pinger.Run() // Blocks until finished.
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("123")
+	stats := pinger.Statistics().Rtts
+	fmt.Println(len(stats))
+	for _,t := range stats{
+		fmt.Println(t.Microseconds())
+
+	}
 }
 

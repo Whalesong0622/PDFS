@@ -1,6 +1,7 @@
 package heartbeat
 
 import (
+	"PDFS-Server/DB"
 	"PDFS-Server/common"
 	"fmt"
 	"io/ioutil"
@@ -37,7 +38,7 @@ func DFS(curPath string) {
 
 	for _, fi := range files {
 		if !fi.IsDir() {
-			updateBlockInfo(blockPath+curPath+fi.Name(),ServerIp,time.Now().Unix())
+			DB.UpdateBlockInfo(blockPath+curPath+fi.Name(),ServerIp,time.Now().Unix())
 		}
 	}
 

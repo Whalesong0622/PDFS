@@ -21,7 +21,7 @@ func SendFile(fileName string, conn net.Conn) {
 		return
 	}
 
-	buf := make([]byte, 1024*1024*64)
+	buf := make([]byte, 1024*1024)
 	n, err := conn.Read(buf)
 	if err != nil {
 		log.Println(err)

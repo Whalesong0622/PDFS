@@ -1,15 +1,13 @@
 package api
 
 import (
+	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"fmt"
 	"io"
 	"log"
 	"net"
-	"sort"
 	"strconv"
-	"strings"
-	"sync"
 	"time"
 )
 
@@ -17,66 +15,67 @@ type block struct {
 	file  []byte
 	index int
 }
-type blocks []block
-func (b blocks) Less(i, j int) bool { return b[i].index < b[j].index }
-func (b blocks) Swap(i, j int) { b[i],b[j] = b[j],b[i] }
-func (b blocks) Len() int { return len(b) }
 
-func Read(fileName string, conn net.Conn, blockNums int) {
+// 该函数查询并返回所有分块的服务器ip地址，在客户端或前端再次请求服务器
+func Read(path string, conn net.Conn) {
 	defer conn.Close()
-	blockPath = common.GetBlocksPathConfig()
-	path := strings.Join([]string{blockPath, fileName}, "")
-
-	buf := make([]byte, 1024*1024*64)
-	n, err := conn.Read(buf)
-	if err != nil {
-		log.Println(err)
-	}
+	// path := strings.Join([]string{blockPath, fileName}, "")
 
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
-	files := make(blocks,0)
-	wc := sync.WaitGroup{}
 
-	for i := 0; i < blockNums; i++ {
-		go func(idx int) {
-			wc.Add(1)
-			conn2, err := net.Dial("tcp", "43.132.181.175:11111")
-			defer conn2.Close()
-			if err != nil {
-				fmt.Println("net.Dial err = ", err)
+	buf := make([]byte, 1024*1024)
+	n, err := conn.Read(buf)
+	if err != nil {
+		log.Println(err)
+	}
+	var blockNums int
+	ipList := make([]string,0)
+	if "ok" == string(buf[:n]) {
+		blockNums,err = DB.GetFileBlockNums(path)
+		if err != nil{
+			conn.Write([]byte("error"))
+			return
+		}
+		for i:= 0;i < blockNums;i++ {
+			blockName := path+"-"+strconv.Itoa(i)
+			ips,err := DB.GetBlockIpList(blockName)
+			if err != nil{
+				conn.Write([]byte("error"))
 				return
 			}
-			conn2.Write([]byte(strconv.Itoa(2)))
-			buf := make([]byte, 1024)
-			n, err := conn.Read(buf)
-			if err != nil {
-				fmt.Println("conn.Read err", err)
+			// 对于每个块的服务器，选择延迟最低的服务器去请求
+			tmpIp := ""
+			latency := -1
+			for _,ip := range ips{
+				tmp := common.GetLentcy(ip)
+				if tmp != -1 {
+					if latency == -1{
+						latency = tmp
+						tmpIp = ip
+					}else if tmp < latency{
+						latency = tmp
+						tmpIp = ip
+					}
+				}
 			}
-			if "ok" == string(buf[:n]) {
-				fmt.Println("成功连接，请输入需要下载的文件的名字")
-				name := path + "-" + strconv.Itoa(idx)
-				conn2.Write([]byte(name))
-				tmpBlock := ReadFromServer(name, conn)
-				files = append(files, block{tmpBlock, idx})
+			if tmpIp != "" {
+				ipList = append(ipList, tmpIp)
+			}else{
+				conn.Write([]byte("error"))
+				return
 			}
-		}(i)
-	}
-	wc.Wait()
-	sort.Sort(files)
-
-	n, err = conn.Read(buf)
-	if err != nil {
-		fmt.Println(err)
-	}
-	if "ok" == string(buf[:n]) {
-		for i := 0;i < blockNums;i++{
-			conn.Write(files[i].file)
 		}
 	}
+
+	conn.Write([]byte(strconv.Itoa(blockNums)))
+	for _,ip := range ipList{
+		conn.Write([]byte(ip))
+	}
+
 	end := time.Now().Local().UnixNano() / (1000 * 1000)
-	log.Printf("Read file %s to %s ended! Timecost: %d ms", fileName, conn.RemoteAddr().String(), end-begin)
+	log.Printf("Read file %s to %s ended! Timecost: %d ms", path, conn.RemoteAddr().String(), end-begin)
 }
 
 func ReadFromServer(name string, conn net.Conn) []byte {

@@ -27,7 +27,7 @@ func RevFile(fileName string, conn net.Conn) {
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
 	// 拿到数据
-	buf := make([]byte, 1024*1024*64)
+	buf := make([]byte, 1024*1024)
 	for {
 		n, err := conn.Read(buf)
 		if err != nil {
@@ -37,7 +37,7 @@ func RevFile(fileName string, conn net.Conn) {
 				if err != nil {
 					log.Println("Get file infos err:", err, "maybe file has borken.")
 				}
-				log.Printf("Send file %s to %s ended!The file has %.3f mb， Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+				log.Printf("Receive file %s to %s ended!The file has %.3f mb， Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
 				return
 			} else {
 				log.Println("conn.Read err =", err)
@@ -50,7 +50,7 @@ func RevFile(fileName string, conn net.Conn) {
 			if err != nil {
 				log.Println("Get file infos err:", err, "maybe file has borken.")
 			}
-			log.Printf("Send file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+			log.Printf("Receive file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
 			return
 		}
 		file.Write(buf[:n])

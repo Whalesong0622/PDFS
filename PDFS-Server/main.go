@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PDFS-Server/DB"
 	"PDFS-Server/common"
 	"PDFS-Server/heartbeat"
 	"PDFS-Server/tcp"
@@ -27,7 +28,7 @@ func main() {
 	}
 
 	ServerIp = common.GetIpConfig()
-	heartbeat.RedisInit()
+	DB.RedisInit()
 
 	Server, err := net.Listen("tcp", addr)
 	if err != nil {
