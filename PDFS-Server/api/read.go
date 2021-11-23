@@ -47,7 +47,7 @@ func SendFile(fileName string, conn net.Conn) {
 					return
 				}
 			}
-			conn.Write(buf[:n])
+			_, _ = conn.Write(buf[:n])
 		}
 	}
 }

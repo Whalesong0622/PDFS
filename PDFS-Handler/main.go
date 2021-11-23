@@ -1,6 +1,7 @@
 package main
 
 import (
+	"PDFS-Handler/DB"
 	"PDFS-Handler/tcp"
 	"PDFS-Handler/common"
 	"log"
@@ -13,14 +14,11 @@ var blockPath string
 
 
 func main() {
-	blockPath = common.GetBlocksPathConfig()
-	info,err := os.Stat(blockPath)
-	if info.IsDir() != true {
-		err := os.MkdirAll(blockPath, os.ModePerm)
-		if err != nil {
-			log.Println("Create blockPath error:", err)
-			return
-		}
+	err := Init()
+
+	if err != nil {
+		log.Println("Init error:",err)
+		return
 	}
 
 	Server, err := net.Listen("tcp", addr)
@@ -40,4 +38,24 @@ func main() {
 		log.Println("Get request from", conn.RemoteAddr().String())
 		go tcp.HandleConn(conn)
 	}
+}
+
+func Init() error {
+	blockPath = common.GetBlocksPathConfig()
+	info,err := os.Stat(blockPath)
+	if err != nil{
+		return err
+	}
+
+	if info.IsDir() != true {
+		err := os.MkdirAll(blockPath, os.ModePerm)
+		if err != nil {
+			log.Println("Create blockPath error:", err)
+			return err
+		}
+	}
+
+	DB.RedisInit()
+
+	return nil
 }

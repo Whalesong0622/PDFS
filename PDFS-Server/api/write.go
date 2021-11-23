@@ -53,6 +53,6 @@ func RevFile(fileName string, conn net.Conn) {
 			log.Printf("Receive file %s to %s ended!The file has %.3f mb，Timecost: %d ms,average %.3f mb/s", fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
 			return
 		}
-		file.Write(buf[:n])
+		_, _ = file.Write(buf[:n])
 	}
 }

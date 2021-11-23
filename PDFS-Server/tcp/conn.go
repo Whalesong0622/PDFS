@@ -16,26 +16,34 @@ func HandleConn(conn net.Conn) {
 		log.Println("conn.Read err =", err)
 		return
 	}
+	user := string(buf[:n])
+	log.Println("Receive request from:",user,",reply ok")
+	_, _ = conn.Write([]byte("ok"))
 
+	n, err = conn.Read(buf)
+	if err != nil {
+		log.Println("conn.Read err =", err)
+		return
+	}
 	op := string(buf[:n])
 
 	if op == WRITE_OP {
-		log.Println("Reply ok to", conn.RemoteAddr().String())
-		conn.Write([]byte("ok"))
+		log.Println("Receive write request from:",conn.RemoteAddr().String(),"Reply ok")
+		_, _ = conn.Write([]byte("ok"))
 
 		n, err = conn.Read(buf)
 		if err != nil {
 			log.Println("conn.Read err =", err)
 		}
 
-		fileName := string(buf[:n])
-		log.Println("Receiving file", fileName, "from", conn.RemoteAddr().String(), ",reply ok")
-		conn.Write([]byte("ok"))
+		path := string(buf[:n])
+		log.Println("Receiving file", path, "from", conn.RemoteAddr().String(), ",reply ok")
+		_, _ = conn.Write([]byte("ok"))
 
-		api.RevFile(fileName, conn)
+		api.RevFile(path, conn)
 	} else if op == READ_OP {
-		log.Println("Reply ok to", conn.RemoteAddr().String())
-		conn.Write([]byte("ok"))
+		log.Println("Receive read request from:",conn.RemoteAddr().String(),"Reply ok")
+		_, _ = conn.Write([]byte("ok"))
 
 		n, err = conn.Read(buf)
 		if err != nil {
@@ -44,12 +52,12 @@ func HandleConn(conn net.Conn) {
 
 		name := string(buf[:n])
 		log.Println("Sending file", name, "from", conn.RemoteAddr(), ",reply ok")
-		conn.Write([]byte("ok"))
+		_, _ = conn.Write([]byte("ok"))
 
 		api.SendFile(name, conn)
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
-		conn.Write([]byte("error"))
+		_, _ = conn.Write([]byte("error"))
 		conn.Close()
 	}
 }

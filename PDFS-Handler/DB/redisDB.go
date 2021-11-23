@@ -17,7 +17,7 @@ func RedisInit() {
 	master := common.GetMasterIpConfig()
 	redisHost := master + ":6379"
 	Pool = newPool(redisHost)
-	c()
+	close()
 }
 
 func newPool(server string) *redis.Pool {
@@ -42,7 +42,7 @@ func newPool(server string) *redis.Pool {
 	}
 }
 
-func c() {
+func close() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 	signal.Notify(signalChan, syscall.SIGTERM)

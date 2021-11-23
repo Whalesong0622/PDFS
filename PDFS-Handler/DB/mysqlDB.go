@@ -16,7 +16,7 @@ const (
 	dbName   = "mysql"
 )
 
-func InitDB() *sql.DB {
+func InitMySQLDB() *sql.DB {
 	path := strings.Join([]string{userName, ":", password, "@tcp(", ip, ":", port, ")/", dbName, "?charset=utf8"}, "")
 	DB, _ := sql.Open("mysql", path)
 	DB.SetConnMaxLifetime(100)

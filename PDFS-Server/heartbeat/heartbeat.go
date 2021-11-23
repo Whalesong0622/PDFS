@@ -9,22 +9,28 @@ import (
 )
 
 var blockPath string
-var ServerIp string
+var ServerAddr string
+
 func HeartBeatTimer(){
 	blockPath = common.GetBlocksPathConfig()
-	ServerIp = common.GetIpConfig()
+	ServerAddr = common.GetServerAddrConfig()
 	for{
-		HeartBeat()
+		go HeartBeat()
+		// 每二十秒更新一次
 		time.Sleep(time.Second*20)
 	}
 }
 
 func HeartBeat(){
-	DFS("")
+	DFS(blockPath)
 }
 
 func DFS(curPath string) {
-	files, err := ioutil.ReadDir(blockPath+curPath)
+	if curPath[len(curPath)-1] != '/' {
+		curPath += "/"
+	}
+
+	files, err := ioutil.ReadDir(curPath)
 	if err != nil {
 		fmt.Println("read file path error", err)
 		return
@@ -38,13 +44,13 @@ func DFS(curPath string) {
 
 	for _, fi := range files {
 		if !fi.IsDir() {
-			DB.UpdateBlockInfo(blockPath+curPath+fi.Name(),ServerIp,time.Now().Unix())
+			go DB.UpdateBlockInfo(curPath+fi.Name(), ServerAddr, time.Now().Unix())
 		}
 	}
 
 	for _, fi := range files {
 		if fi.IsDir() {
-			DFS(blockPath+curPath+fi.Name()+"/")
+			go DFS(curPath+fi.Name())
 		}
 	}
 }

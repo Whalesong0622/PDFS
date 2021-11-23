@@ -10,37 +10,27 @@ import (
 	"os"
 )
 
-//var addr = "10.0.4.4:11111"
-var addr = "127.0.0.1:11111"
 var blockPath string
-var ServerIp string
-
+var ServerAddr string
 
 func main() {
-	blockPath = common.GetBlocksPathConfig()
-	info,err := os.Stat(blockPath)
-	if info.IsDir() != true {
-		err := os.MkdirAll(blockPath, os.ModePerm)
-		if err != nil {
-			log.Println("Create blockPath error:", err)
-			return
-		}
+	err := Init()
+	if err != nil {
+		log.Println("Init Server error:", err)
+		return
 	}
 
-	ServerIp = common.GetIpConfig()
-	DB.RedisInit()
-
-	Server, err := net.Listen("tcp", addr)
+	Server, err := net.Listen("tcp", ServerAddr)
 	if err != nil {
 		log.Println("net.Listen err =", err)
 		return
 	}
 	defer Server.Close()
-	log.Println("Server start serving,listening to", addr)
+	log.Println("Server start serving,listening to", ServerAddr)
 	go heartbeat.HeartBeatTimer()
 
 	for {
-		for{
+		for {
 			conn, err := Server.Accept()
 			if err != nil {
 				log.Println("Server.Accept err =", err)
@@ -50,4 +40,26 @@ func main() {
 			go tcp.HandleConn(conn)
 		}
 	}
+}
+
+func Init() error {
+	blockPath = common.GetBlocksPathConfig()
+	info, err := os.Stat(blockPath)
+	if err != nil {
+		return err
+	}
+
+	if info.IsDir() != true {
+		err := os.MkdirAll(blockPath, os.ModePerm)
+		if err != nil {
+			log.Println("Create blockPath error:", err)
+			return err
+		}
+	}
+
+	ServerAddr = common.GetServerAddrConfig()
+	DB.RedisInit()
+
+	log.Println("Server init success")
+	return nil
 }

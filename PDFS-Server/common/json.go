@@ -49,7 +49,7 @@ func GetDownloadPathConfig() string {
 	return path
 }
 
-func GetIpConfig() string {
+func GetServerAddrConfig() string {
 	jsonFile, err := os.Open("./config.json")
 	if err != nil {
 
@@ -61,7 +61,7 @@ func GetIpConfig() string {
 	var Conf map[string]interface{}
 	json.Unmarshal(fileValue, &Conf)
 
-	path := Conf["Server_ip"].(string)
+	path := Conf["Server_addr"].(string)
 	if path[len(path)-1] != '/' {
 		path += "/"
 	}

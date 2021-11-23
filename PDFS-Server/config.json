@@ -1,4 +1,5 @@
 {
   "download_path": "/Users/whaleshark/Downloads/pdfs/download/",
-  "blocks_path": "/Users/whaleshark/Downloads/pdfs/blocks/"
+  "blocks_path": "/Users/whaleshark/Downloads/pdfs/blocks/",
+  "Server_addr": "127.0.0.1:11111"
 }
