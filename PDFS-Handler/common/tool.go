@@ -28,8 +28,8 @@ func GetFileBlockNums(path string) int {
 
 func IsExist(path string) bool {
 	_, err := os.Stat(path)
-	if err == nil {
-		return true
+	if err != nil {
+		return false
 	}
 	if os.IsNotExist(err) {
 		return false
@@ -43,13 +43,13 @@ func GetLentcy(ip string) int {
 		panic(err)
 	}
 	pinger.Count = 3
-	pinger.Timeout = time.Second*2
+	pinger.Timeout = time.Second * 2
 	err = pinger.Run()
 	if err != nil {
 		panic(err)
 	}
 	stats := pinger.Statistics().Rtts
-	if len(stats) == 0{
+	if len(stats) == 0 {
 		return -1
 	}
 	var sum int
@@ -58,4 +58,15 @@ func GetLentcy(ip string) int {
 	}
 
 	return sum / len(stats)
+}
+
+func IsDir(path string) bool {
+	info, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	if !info.IsDir() {
+		return false
+	}
+	return true
 }

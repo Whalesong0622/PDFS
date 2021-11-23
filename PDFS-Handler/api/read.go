@@ -19,7 +19,7 @@ type block struct {
 // 该函数查询并返回所有分块的服务器ip地址，在客户端或前端再次请求服务器
 func Read(path string, conn net.Conn) {
 	defer conn.Close()
-	// path := strings.Join([]string{blockPath, fileName}, "")
+	filename := common.ToSha(path)
 
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
@@ -33,13 +33,13 @@ func Read(path string, conn net.Conn) {
 	var blockNums int
 	ipList := make([]string,0)
 	if "ok" == string(buf[:n]) {
-		blockNums,err = DB.GetFileBlockNums(path)
+		blockNums,err = DB.GetFileBlockNums(filename)
 		if err != nil{
 			conn.Write([]byte("error"))
 			return
 		}
 		for i:= 0;i < blockNums;i++ {
-			blockName := path+"-"+strconv.Itoa(i)
+			blockName := filename+"-"+strconv.Itoa(i)
 			ips,err := DB.GetBlockIpList(blockName)
 			if err != nil{
 				conn.Write([]byte("error"))
