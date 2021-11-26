@@ -62,11 +62,10 @@ func GetLentcy(ip string) int {
 
 func IsDir(path string) bool {
 	info, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	if !info.IsDir() {
-		return false
-	}
-	return true
+	return err == nil && info.IsDir()
+}
+
+func IsFile(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && !info.IsDir()
 }

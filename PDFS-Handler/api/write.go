@@ -15,12 +15,12 @@ import (
 const BlockSize int = 64000000 //64MB
 var blockPath string
 
-func Write(path string, user string, conn net.Conn) {
+func Write(path string, filename string,user string, conn net.Conn) {
 	defer conn.Close()
 
 	_, err := os.Create(path)
 	if err != nil {
-		log.Println("Write error:", err)
+		log.Println("Error occur when writing:", err)
 		conn.Write([]byte("error"))
 		return
 	}
