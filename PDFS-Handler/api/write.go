@@ -13,12 +13,13 @@ import (
 )
 
 const BlockSize int = 64000000 //64MB
-var blockPath string
 
-func Write(path string, filename string,user string, conn net.Conn) {
+func Write(user string,path string, filename string, conn net.Conn) {
 	defer conn.Close()
 
-	_, err := os.Create(path)
+	// filepath：namespace/user/相对路径/文件名
+	filepath := common.FilePath(user,path,filename)
+	_, err := os.Create(filepath)
 	if err != nil {
 		log.Println("Error occur when writing:", err)
 		conn.Write([]byte("error"))
@@ -29,7 +30,7 @@ func Write(path string, filename string,user string, conn net.Conn) {
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
-	fileName := common.ToSha(path)
+	fileName := common.ToSha(filepath)
 
 	// 获取数据
 	buf := make([]byte, 1024*1024)
@@ -71,7 +72,7 @@ func Write(path string, filename string,user string, conn net.Conn) {
 	log.Printf("Send file %s to %s ended! Timecost: %d ms", fileName, conn.RemoteAddr().String(), end-begin)
 }
 
-// 有bug，需要修复。若服务器返回error，无法处理错误
+// 有bug，需要修复。若服务器返回error，无法处理错误。参数也应该修改
 func WriteToServer(fileName string, user string, file []byte, wc *sync.WaitGroup) {
 	conn, err := net.Dial("tcp", "43.132.181.175:11111")
 	defer conn.Close()

@@ -8,6 +8,7 @@ import (
 	"net"
 )
 
+// 协议
 type Package struct {
 	User     string `json:"user"`     // 用户名
 	Op       string `json:"op"`       // 操作
@@ -41,14 +42,14 @@ func HandleConn(conn net.Conn) {
 	_, _ = conn.Write([]byte("ok"))
 
 	if op == WRITE_OP {
-		api.Write(path, filename,user, conn)
+		api.Write(user, path, filename, conn)
 	} else if op == READ_OP {
 		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println(err)
 		}
-		if "ok" == string(buf[:n]){
-			api.Read(path,filename,user,conn)
+		if "ok" == string(buf[:n]) {
+			api.Read(user, path, filename, conn)
 		}
 	}
 }

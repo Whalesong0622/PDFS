@@ -12,16 +12,16 @@ import (
 // 该函数查询并返回所有分块的服务器ip地址，在客户端或前端再次请求各个服务器
 func Read(user string,path string,filename string, conn net.Conn) {
 	defer conn.Close()
-	fileName := common.ToSha(path)//待修复
+	filePath := common.FilePath(user,path,filename)
+	fileName := common.ToSha(filePath)
 
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
-	var blockNums int
 	ipList := make([]string, 0)
 	blockNums, err := DB.GetFileBlockNums(fileName)
 	if err != nil {
-		conn.Write([]byte("error"))
+		_, _ = conn.Write([]byte("error"))
 		return
 	}
 
@@ -29,7 +29,7 @@ func Read(user string,path string,filename string, conn net.Conn) {
 		blockName := fileName + "-" + strconv.Itoa(i)
 		ips, err := DB.GetBlockIpList(blockName)
 		if err != nil {
-			conn.Write([]byte("error"))
+			_, _ = conn.Write([]byte("error"))
 			return
 		}
 		// 对于每个块的服务器，选择延迟最低的服务器去请求
@@ -50,7 +50,7 @@ func Read(user string,path string,filename string, conn net.Conn) {
 		if tmpIp != "" {
 			ipList = append(ipList, tmpIp)
 		} else {
-			conn.Write([]byte("error"))
+			_, _ = conn.Write([]byte("error"))
 			return
 		}
 	}

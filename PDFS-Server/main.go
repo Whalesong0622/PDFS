@@ -12,12 +12,13 @@ import (
 )
 
 type AddrConfigStruct struct {
-	ServerAddr   string `json:"server_addr"`
-	HandlerAddr   string `json:"handler_addr"`
+	ServerAddr  string `json:"server_addr"`
+	HandlerAddr string `json:"handler_addr"`
 }
 
 type PathConfigStruct struct {
-	BlocksPath   string `json:"blocks_path"`
+	BlocksPath    string `json:"blocks_path"`
+	NamespacePath string
 }
 
 var AddrConfig AddrConfigStruct
@@ -57,17 +58,17 @@ func main() {
 func Init() error {
 	var jsonFile *os.File
 	info, err := os.Stat("./config.json")
-	if err == nil && !info.IsDir(){
+	if err == nil && !info.IsDir() {
 		log.Println("Loading config ...")
 		jsonFile, err = os.Open("./config.json")
 		if err != nil {
-			log.Println("Error occur when reading config.json:",err)
+			log.Println("Error occur when reading config.json:", err)
 			return err
 		}
 	} else {
 		jsonFile, err = os.Create("config.json")
 		if err != nil {
-			log.Println("Error occur when creating config.json:",err)
+			log.Println("Error occur when creating config.json:", err)
 			return err
 		}
 		_, _ = jsonFile.WriteString("{\n	\"blocks_path\": \"/Users/whaleshark/Downloads/pdfs/blocks/\",\n")
@@ -77,9 +78,9 @@ func Init() error {
 	defer jsonFile.Close()
 
 	var config []byte
-	_ ,err = jsonFile.Read(config)
+	_, err = jsonFile.Read(config)
 
-	GetConfig(config,&AddrConfig,&PathConfig)
+	GetConfig(config, &AddrConfig, &PathConfig)
 
 	info, err = os.Stat(PathConfig.BlocksPath)
 	if err != nil {
@@ -101,7 +102,7 @@ func Init() error {
 	return nil
 }
 
-func GetConfig(config []byte,AddrConfig *AddrConfigStruct,PathConfig *PathConfigStruct){
-	json.Unmarshal(config,AddrConfig)
-	json.Unmarshal(config,PathConfig)
+func GetConfig(config []byte, AddrConfig *AddrConfigStruct, PathConfig *PathConfigStruct) {
+	json.Unmarshal(config, AddrConfig)
+	json.Unmarshal(config, PathConfig)
 }
