@@ -12,8 +12,8 @@ var blockPath string
 var ServerAddr string
 
 func HeartBeatTimer(){
-	blockPath = common.GetBlocksPathConfig()
-	ServerAddr = common.GetServerAddrConfig()
+	blockPath = common.GetBlocksPath()
+	ServerAddr = common.GetServerAddr()
 	for{
 		go HeartBeat()
 		// 每二十秒更新一次

@@ -1,5 +1,6 @@
 {
-  "blocks_path": "/Users/whaleshark/Downloads/pdfs/blocks/",
-  "server_addr": "127.0.0.1:11111",
-  "handler_addr": "127.0.0.1:9999"
+    "server_addr": "127.0.0.1:9999",
+	"handler_addr": "127.0.0.1:11111",
+	"blocks_path": "./blocks",
+	"namespace_path": "./namespace"
 }

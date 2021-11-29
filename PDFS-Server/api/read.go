@@ -12,7 +12,7 @@ import (
 
 func SendFile(fileName string, conn net.Conn) {
 	defer conn.Close()
-	blockPath = common.GetBlocksPathConfig()
+	blockPath = common.GetBlocksPath()
 	path := strings.Join([]string{blockPath, fileName}, "")
 	file, err := os.Open(path)
 	defer file.Close()

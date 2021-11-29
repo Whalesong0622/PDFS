@@ -15,7 +15,7 @@ var (
 )
 
 func RedisInit() {
-	master := common.GetMasterIpConfig()
+	master := common.GetHandlerAddr()
 	redisHost := master+":6379"
 	Pool = newPool(redisHost)
 	close()
