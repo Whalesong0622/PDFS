@@ -3,6 +3,7 @@ package common
 import (
 	"encoding/json"
 	"log"
+	"os"
 )
 
 type AddrConfigStruct struct {
@@ -12,12 +13,18 @@ type AddrConfigStruct struct {
 
 type PathConfigStruct struct {
 	BlocksPath    string `json:"blocks_path"`
-	NamespacePath string `json:"namespace_path"`
 }
 
 var AddrConfig AddrConfigStruct
 var PathConfig PathConfigStruct
 
+func DefaultConfigInit (file *os.File){
+	_, _ = file.WriteString("{\n")
+	_, _ = file.WriteString("    \"server_addr\": \"127.0.0.1:9999\",\n")
+	_, _ = file.WriteString("	\"handler_addr\": \"127.0.0.1:11111\",\n")
+	_, _ = file.WriteString("	\"blocks_path\": \"blocks\"\n")
+	_, _ = file.WriteString("}")
+}
 
 func GetConfig(config []byte, AddrConfig *AddrConfigStruct, PathConfig *PathConfigStruct) {
 	json.Unmarshal(config, AddrConfig)
@@ -25,7 +32,6 @@ func GetConfig(config []byte, AddrConfig *AddrConfigStruct, PathConfig *PathConf
 	log.Println("Server addr:",AddrConfig.ServerAddr)
 	log.Println("Handler addr:",AddrConfig.HandlerAddr)
 	log.Println("Blocks path:",PathConfig.BlocksPath)
-	log.Println("Namespace path:",PathConfig.NamespacePath)
 }
 
 func GetServerAddr() string{
@@ -38,8 +44,4 @@ func GetHandlerAddr() string{
 
 func GetBlocksPath() string{
 	return PathConfig.BlocksPath
-}
-
-func GetNamespacePathAddr() string{
-	return PathConfig.NamespacePath
 }

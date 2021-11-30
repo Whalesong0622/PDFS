@@ -1,6 +1,5 @@
 {
     "server_addr": "127.0.0.1:9999",
 	"handler_addr": "127.0.0.1:11111",
-	"blocks_path": "./blocks",
-	"namespace_path": "./namespace"
+	"blocks_path": "blocks"
 }

@@ -2,100 +2,84 @@ package tcp
 
 import (
 	"PDFS-Server/api"
-	"encoding/json"
+	"PDFS-Server/common"
+	"fmt"
 	"log"
 	"net"
+	"os"
+	"strings"
 )
 
 type Package struct {
-	User string `json:"user"`
-	Op   string    `json:"op"`
-	Path string `json:"path"`
+	Op string
+	FileName string
 }
 
+const OK = "0"
+const ERROR = "255"
 const WRITE_OP = "1"
 const READ_OP = "2"
 
 func HandleConn(conn net.Conn) {
 	buf := make([]byte, 1024)
+	byteStream := make([]byte,0)
 	n, err := conn.Read(buf)
-	if err != nil {
-		log.Println("Error occur when conn.Read:", err)
+	if err != nil{
+		log.Println("Error occur when conn.Read:",err)
+		conn.Close()
 		return
 	}
-	var requestPackage Package
-	json.Unmarshal(buf,&requestPackage)
+	byteStream = append(byteStream,buf[:n]...)
 
-	user := requestPackage.User
-	op := requestPackage.Op
-	path := requestPackage.Path
+	var request Package
+	depackage(byteStream,&request)
 
-	if user == "" {
-		log.Println("Error occur when serving",conn.RemoteAddr(),",user nil")
-		return
-	}else if op == "" {
+
+	if request.Op == "" {
 		log.Println("Error occur when serving",conn.RemoteAddr(),",operation nil")
 		return
-	}else if op == WRITE_OP && path == ""{
+	}else if request.Op == WRITE_OP && request.FileName == ""{
 		log.Println("Error occur when serving",conn.RemoteAddr(),",Write operation but path nil")
 		return
-	}else if op == READ_OP && path == ""{
+	}else if request.Op == READ_OP && request.FileName == ""{
 		log.Println("Error occur when serving",conn.RemoteAddr(),",Read operation but path nil")
 		return
 	}
-	log.Println("Receive request from:", user, ",reply ok")
-	_, _ = conn.Write([]byte("ok"))
 
-	if op == WRITE_OP {
-		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok")
-		_, _ = conn.Write([]byte("ok"))
+	if request.Op == WRITE_OP {
+		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok.Start receiving file.")
+		_, _ = conn.Write([]byte(OK))
+		api.RevFile(request.FileName, conn)
+	} else if request.Op == READ_OP {
+		// 首先检查块是否存在
+		filePath := strings.Join([]string{common.GetBlocksPath(),request.FileName},"/")
+		fmt.Println(filePath)
+		info, err := os.Stat(filePath)
+		if err == nil && !info.IsDir() {
 
-		n, err = conn.Read(buf)
-		if err != nil {
-			log.Println("conn.Read err =", err)
+		}else{
+			log.Println("Not found",request.FileName, "Reply error")
+			_, _ = conn.Write([]byte(ERROR))
+			conn.Close()
+			return
 		}
 
-		path := string(buf[:n])
-		log.Println("Receiving file", path, "from", conn.RemoteAddr().String(), ",reply ok")
-		_, _ = conn.Write([]byte("ok"))
-
-		api.RevFile(path, conn)
-	} else if op == READ_OP {
 		log.Println("Receive read request from:", conn.RemoteAddr().String(), "Reply ok")
-		_, _ = conn.Write([]byte("ok"))
+		_, _ = conn.Write([]byte(OK))
 
-		n, err = conn.Read(buf)
+		n, err := conn.Read(buf)
 		if err != nil {
 			log.Println("conn.Read err =", err)
 		}
 
-		name := string(buf[:n])
-		log.Println("Sending file", name, "from", conn.RemoteAddr(), ",reply ok")
-		_, _ = conn.Write([]byte("ok"))
-
-		api.SendFile(name, conn)
+		confirm := string(buf[:n])
+		if confirm == OK {
+			log.Println("Sending file", request.FileName, "to", conn.RemoteAddr())
+			api.SendFile(request.FileName, conn)
+		}
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
 		_, _ = conn.Write([]byte("error"))
 		conn.Close()
 	}
-}
-
-func Legal(RemoteAddr string,user string,op string,path string) bool {
-	if user == "" {
-		log.Println("Error occur when serving",RemoteAddr,",user nil")
-		return false
-	}else if op == "" {
-		log.Println("Error occur when serving",RemoteAddr,",operation nil")
-		return false
-	}else if op == WRITE_OP && path == ""{
-		if path == ""{
-			log.Println("Error occur when serving",RemoteAddr,",Write operation but path nil")
-			return false
-		}
-	}else if op == READ_OP && path == ""{
-		log.Println("Error occur when serving",RemoteAddr,",Read operation but path nil")
-		return false
-	}
-	return true
 }

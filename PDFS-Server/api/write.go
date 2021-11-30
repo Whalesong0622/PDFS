@@ -15,7 +15,7 @@ var blockPath string
 func RevFile(fileName string, conn net.Conn) {
 	defer conn.Close()
 	blockPath = common.GetBlocksPath()
-	path := strings.Join([]string{blockPath, fileName}, "")
+	path := strings.Join([]string{blockPath, fileName}, "/")
 	file, err := os.Create(path)
 	defer file.Close()
 	if err != nil {

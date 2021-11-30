@@ -6,11 +6,12 @@ import (
 	"os"
 )
 
+// 用于读取配置文件config.json，检查保存块的blocks目录
 func Init() error {
 	// 检查config.json是否存在
 	var jsonFile *os.File
 	info, err := os.Stat("./config.json")
-	if err == nil  {
+	if err == nil && !info.IsDir() {
 		log.Println("Loading config ...")
 		jsonFile, err = os.Open("./config.json")
 		if err != nil {
@@ -33,26 +34,19 @@ func Init() error {
 	config,_ := ioutil.ReadAll(jsonFile)
 	GetConfig(config, &AddrConfig, &PathConfig)
 
+	// 检查存放块的blocks目录是否存在
 	info, err = os.Stat(PathConfig.BlocksPath)
 	if err == nil && info.IsDir(){
-
+		log.Println("Found blocks dir.")
 	}else{
-		err := os.MkdirAll("./"+PathConfig.BlocksPath, os.ModePerm)
+		log.Println("Not found blocks dir,creating blocksPath...")
+		err := os.MkdirAll(PathConfig.BlocksPath, os.ModePerm)
 		if err != nil {
-			log.Println("Create blockPath error:", err)
+			log.Println("Error occur when creating blocksPath:", err)
 			return err
 		}
 	}
 
-	log.Println("Server init success")
+	log.Println("Server init success.")
 	return nil
-}
-
-func DefaultConfigInit (file *os.File){
-	_, _ = file.WriteString("{\n")
-	_, _ = file.WriteString("    \"server_addr\": \"127.0.0.1:9999\",\n")
-	_, _ = file.WriteString("	\"handler_addr\": \"127.0.0.1:11111\",\n")
-	_, _ = file.WriteString("	\"blocks_path\": \"./blocks\",\n")
-	_, _ = file.WriteString("	\"namespace_path\": \"./namespace\"\n")
-	_, _ = file.WriteString("}")
 }
