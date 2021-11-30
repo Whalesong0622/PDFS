@@ -2,7 +2,6 @@ package api
 
 import (
 	"PDFS-Server/common"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -23,10 +22,9 @@ func SendFile(fileName string, conn net.Conn) {
 	}
 
 	buf := make([]byte, 1024*1024)
-
-	fmt.Println("123")
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
+
 	for {
 		n, err := file.Read(buf)
 		if err != nil {

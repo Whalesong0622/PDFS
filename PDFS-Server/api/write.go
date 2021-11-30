@@ -26,7 +26,6 @@ func RevFile(fileName string, conn net.Conn) {
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
-	// 拿到数据
 	buf := make([]byte, 1024*1024)
 	for {
 		n, err := conn.Read(buf)

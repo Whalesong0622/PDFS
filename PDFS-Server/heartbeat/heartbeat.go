@@ -44,13 +44,10 @@ func DFS(curPath string) {
 
 	for _, fi := range files {
 		if !fi.IsDir() {
-			go DB.UpdateBlockInfo(curPath+fi.Name(), ServerAddr, time.Now().Unix())
+			DB.UpdateBlockInfo(curPath+fi.Name(), ServerAddr, time.Now().Unix())
+		} else {
+			DFS(curPath+fi.Name())
 		}
 	}
 
-	for _, fi := range files {
-		if fi.IsDir() {
-			go DFS(curPath+fi.Name())
-		}
-	}
 }
