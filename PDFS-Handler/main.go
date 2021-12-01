@@ -19,7 +19,7 @@ func main() {
 		return
 	}
 
-	// 监听端口，默认9999
+	// 监听端口，默认11111
 	HandlerAddr = common.GetServerAddr()
 	Server, err := net.Listen("tcp", HandlerAddr)
 	if err != nil {

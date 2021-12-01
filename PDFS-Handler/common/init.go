@@ -37,9 +37,9 @@ func Init() error {
 	// 检查namespace目录是否存在
 	info, err = os.Stat(PathConfig.NamespacePath)
 	if err == nil && info.IsDir(){
-		log.Println("Found blocks dir.")
+		log.Println("Found namespace dir.")
 	}else{
-		log.Println("Not found namespace dir,creating blocksPath...")
+		log.Println("Not found namespace dir,creating namespace ...")
 		err := os.MkdirAll(PathConfig.NamespacePath, os.ModePerm)
 		if err != nil {
 			log.Println("Error occur when creating namespace:", err)

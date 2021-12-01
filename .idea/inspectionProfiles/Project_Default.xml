@@ -25,6 +25,7 @@
         <method importPath="os" receiver="*File" name="Close" />
         <method importPath="net" receiver="Listener" name="Close" />
         <method importPath="github.com/gomodule/redigo/redis" receiver="Conn" name="Close" />
+        <method importPath="database/sql" receiver="*DB" name="Close" />
       </methods>
     </inspection_tool>
   </profile>

@@ -2,6 +2,7 @@ package tcp
 
 import (
 	"PDFS-Handler/api"
+	"fmt"
 	"log"
 	"net"
 )
@@ -46,13 +47,32 @@ func HandleConn(conn net.Conn) {
 	byteStream = append(byteStream, buf[:n]...)
 
 	var request Package
+	// depackage函数应该添加合法性检验
 	err = depackage(byteStream, &request)
+	fmt.Println(request.username,request.passwd)
 	if err != nil {
 		conn.Close()
 		return
 	}
-
-	if request.Op == WRITE_OP {
+	if request.Op == NEW_USER_OP {
+		err := api.NewUser(request.username,request.passwd)
+		if err != nil {
+			_, _ = conn.Write([]byte(UNKNOWN_ERR))
+			conn.Close()
+			return
+		}
+		_, _ = conn.Write([]byte(OK))
+		conn.Close()
+	} else if request.Op == DEL_USER_OP {
+		reply := api.DelUser(request.username,request.passwd)
+		if reply != "" {
+			_, _ = conn.Write([]byte(reply))
+			conn.Close()
+			return
+		}
+		_, _ = conn.Write([]byte(OK))
+		conn.Close()
+	}else if request.Op == WRITE_OP {
 		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok.Start receiving file.")
 		_, _ = conn.Write([]byte(OK))
 		api.Write(request.username,request.path,request.filename, conn)
