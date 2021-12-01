@@ -19,12 +19,11 @@ func Write(username string,path string, filename string, conn net.Conn) {
 
 	_,err := common.NewFile(username,path,filename)
 	if err != nil {
-		conn.Write([]byte(UNKNOWN_ERR))
+		_, _ = conn.Write([]byte(UNKNOWN_ERR))
 		return
 	}
 
 	// redisFilePath：user/相对路径/文件名
-	redisFilePath := common.GenerateFileName(username,path,filename)
 	blockName := common.GenerateBlockName(username,path,filename)
 	// 计时器
 	now := time.Now()
@@ -55,21 +54,19 @@ func Write(username string,path string, filename string, conn net.Conn) {
 		}
 		buf2 = append(buf2, buf[:n]...)
 		if len(buf2) >= BlockSize {
-			tmpFileName := blockName + "-" + strconv.Itoa(cur)
+			go WriteToServer(blockName+"-"+strconv.Itoa(cur), buf2[:BlockSize], &wc)
 			cur++
 			wc.Add(1)
-			go WriteToServer(tmpFileName, buf2[:BlockSize], &wc)
 			buf2 = buf2[BlockSize:]
 		}
 	}
 	if len(buf2) > 0 {
-		tmpFileName := blockName + "-" + strconv.Itoa(cur)
-		go WriteToServer(tmpFileName, buf2, &wc)
+		go WriteToServer(blockName+"-"+strconv.Itoa(cur), buf2, &wc)
 	}
 	wc.Wait()
 
 	end := time.Now().Local().UnixNano() / (1000 * 1000)
-	DB.UpdateFileInfo(redisFilePath,username,sum)
+	DB.UpdateFileInfo(blockName,username,sum)
 	log.Printf("Send file %s to %s ended! Timecost: %d ms", filename, conn.RemoteAddr().String(), end-begin)
 }
 

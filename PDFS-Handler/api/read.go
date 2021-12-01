@@ -10,24 +10,24 @@ import (
 )
 
 // 该函数查询并返回所有分块的服务器ip地址，在客户端或前端再次请求各个服务器
-func Read(user string,path string,filename string, conn net.Conn) {
+func Read(username string,path string,filename string, conn net.Conn) {
 	defer conn.Close()
-	filePath := common.FilePath(user,path,filename)
-	fileName := common.ToSha(filePath)
+
+	blockName := common.GenerateBlockName(username,path,filename)
 
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
 
 	ipList := make([]string, 0)
-	blockNums, err := DB.GetFileBlockNums(fileName)
+	blockNums, err := DB.GetFileBlockNums(blockName)
 	if err != nil {
-		_, _ = conn.Write([]byte("error"))
+		_, _ = conn.Write([]byte(UNKNOWN_ERR))
 		return
 	}
 
 	for i := 0; i < blockNums; i++ {
-		blockName := fileName + "-" + strconv.Itoa(i)
-		ips, err := DB.GetBlockIpList(blockName)
+		blockNames := blockName + "-" + strconv.Itoa(i)
+		ipList, err := DB.GetBlockIpList(blockNames)
 		if err != nil {
 			_, _ = conn.Write([]byte("error"))
 			return
@@ -35,7 +35,7 @@ func Read(user string,path string,filename string, conn net.Conn) {
 		// 对于每个块的服务器，选择延迟最低的服务器去请求
 		tmpIp := ""
 		latency := -1
-		for _, ip := range ips {
+		for _, ip := range ipList {
 			tmp := common.GetLentcy(ip)
 			if tmp != -1 {
 				if latency == -1 {

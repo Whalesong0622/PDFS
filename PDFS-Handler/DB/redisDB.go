@@ -4,6 +4,7 @@ import (
 	"PDFS-Handler/common"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"strconv"
 	"time"
 )
 
@@ -34,4 +35,23 @@ func UpdateFileInfo(path string,username string,size int) error {
 		fmt.Println("set err=", err)
 	}
 	return err
+}
+
+func GetFileBlockNums(blockname string) (int,error) {
+	conn := RedisInit()
+	reply,err := conn.Do("HGET",blockname,"blocknums")
+	if err != nil {
+		return 0,err
+	}
+
+	return strconv.Atoi(reply.(string))
+}
+
+func GetBlockIpList(blocknames string) ([]string,error){
+	conn := RedisInit()
+	reply,err := conn.Do("HKEYS",blocknames)
+	if err != nil {
+		return nil,err
+	}
+	return reply.([]string), nil
 }
