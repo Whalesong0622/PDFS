@@ -2,76 +2,36 @@ package DB
 
 import (
 	"PDFS-Handler/common"
+	"fmt"
 	"github.com/gomodule/redigo/redis"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
-var (
-	Pool *redis.Pool
-)
+const BlockSize int = 64000000 //64MB
 
-func RedisInit() {
-	master := common.GetMasterIpConfig()
-	redisHost := master + ":6379"
-	Pool = newPool(redisHost)
-	close()
-}
-
-func newPool(server string) *redis.Pool {
-
-	return &redis.Pool{
-
-		MaxIdle:     3,
-		IdleTimeout: 240 * time.Second,
-
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", server)
-			if err != nil {
-				return nil, err
-			}
-			return c, err
-		},
-
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
-	}
-}
-
-func close() {
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt)
-	signal.Notify(signalChan, syscall.SIGTERM)
-	signal.Notify(signalChan, syscall.SIGKILL)
-	go func() {
-		<-signalChan
-		Pool.Close()
-		os.Exit(0)
-	}()
-}
-
-func GetFileBlockNums(path string) (int, error) {
-	conn := Pool.Get()
-	defer conn.Close()
-
-	reply, err := conn.Do("HGET", path, "blocknums")
+func RedisInit() redis.Conn{
+	conn, err := redis.Dial("tcp", common.GetRedisAddr())
 	if err != nil {
-		return 0, err
+		fmt.Println("连接错误，err=", err)
+		return nil
 	}
-	return reply.(int), err
+	return conn
 }
 
-func GetBlockIpList(BlockName string)([]string,error){
-	conn := Pool.Get()
-	defer conn.Close()
-
-	reply, err := conn.Do("HKEYS",BlockName)
-	if err != nil{
-		return nil,err
+// 存放在redis中块的信息为哈希，key为文件名，filed为服务器地址，val为unix时间戳
+func UpdateNamespaceInfo(fileName string,ip string,unixTime int64,conn redis.Conn) error {
+	_, err := conn.Do("HMSET", fileName,ip,unixTime)
+	if err != nil {
+		fmt.Println("set err=", err)
 	}
-	return reply.([]string),err
+	return err
+}
+
+func UpdateFileInfo(path string,username string,size int) error {
+	conn := RedisInit()
+	_, err := conn.Do("HMSET", "lastmodify",time.Now().Unix(),"lastheartbeat",time.Now().Unix(),"username",username,"blocknums",size/BlockSize,"size",size)
+	if err != nil {
+		fmt.Println("set err=", err)
+	}
+	return err
 }

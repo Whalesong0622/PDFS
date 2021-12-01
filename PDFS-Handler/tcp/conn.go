@@ -2,54 +2,67 @@ package tcp
 
 import (
 	"PDFS-Handler/api"
-	"PDFS-Handler/common"
-	"encoding/json"
 	"log"
 	"net"
 )
 
-// 协议
-type Package struct {
-	User     string `json:"user"`     // 用户名
-	Op       string `json:"op"`       // 操作
-	Path     string `json:"path"`     // 相对目录路径（不包含文件名）
-	Filename string `json:"filename"` // 文件名
-}
+// 返回值
+const OK = "0"
+const UNKNOWN_ERR = "1"
+const FILE_NOT_EXIST = "2"
+const OP_NOT_EXIST = "3"
+const PASSWD_ERROR = "4"
 
-const WRITE_OP = "1" // 上传文件
-const READ_OP = "2"  // 下载文件
+// 操作
+const NEW_USER_OP = "1"      // 新建用户
+const DEL_USER_OP = "2"      // 删除用户
+const CHANGE_PASSWD_OP = "3" // 修改密码
+const LOGIN_OP = "4"
+const WRITE_OP = "5"       // 上传文件
+const READ_OP = "6"        // 读取文件
+const DEL_OP = "7"         // 删除文件
+const NEW_PATH_OP = "8"    // 新建路径
+const DEL_PATH_OP = "9"    // 删除路径
+const ASK_FILES_OP = "255" // 请求该目录下文件
+
+type Package struct {
+	Op        string
+	username  string
+	passwd    string
+	newpasswd string
+	filename  string
+	path      string
+}
 
 func HandleConn(conn net.Conn) {
 	buf := make([]byte, 1024)
-	_, err := conn.Read(buf)
+	byteStream := make([]byte, 0)
+	n, err := conn.Read(buf)
 	if err != nil {
 		log.Println("Error occur when conn.Read:", err)
+		conn.Close()
 		return
 	}
-	var requestPackage Package
-	_ = json.Unmarshal(buf, &requestPackage)
+	byteStream = append(byteStream, buf[:n]...)
 
-	user := requestPackage.User
-	op := requestPackage.Op
-	path := requestPackage.Path
-	filename := requestPackage.Filename
-
-	if !common.IsLegal(conn.RemoteAddr().String(), user, op, path, filename) {
+	var request Package
+	err = depackage(byteStream, &request)
+	if err != nil {
+		conn.Close()
 		return
 	}
 
-	log.Println("Receive legal request from:", user, ",reply ok")
-	_, _ = conn.Write([]byte("ok"))
+	if request.Op == WRITE_OP {
+		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok.Start receiving file.")
+		_, _ = conn.Write([]byte(OK))
+		api.Write(request.username,request.path,request.filename, conn)
+	} else if request.Op == READ_OP {
 
-	if op == WRITE_OP {
-		api.Write(user, path, filename, conn)
-	} else if op == READ_OP {
-		n, err := conn.Read(buf)
-		if err != nil {
-			log.Println(err)
-		}
-		if "ok" == string(buf[:n]) {
-			api.Read(user, path, filename, conn)
-		}
+	} else if request.Op == DEL_OP {
+
+	} else {
+		log.Println("Reply err to", conn.RemoteAddr().String())
+		_, _ = conn.Write([]byte(OP_NOT_EXIST))
+		conn.Close()
 	}
 }

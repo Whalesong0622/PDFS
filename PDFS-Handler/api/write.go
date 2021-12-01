@@ -1,12 +1,12 @@
 package api
 
 import (
+	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"fmt"
 	"io"
 	"log"
 	"net"
-	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -14,23 +14,21 @@ import (
 
 const BlockSize int = 64000000 //64MB
 
-func Write(user string,path string, filename string, conn net.Conn) {
+func Write(username string,path string, filename string, conn net.Conn) {
 	defer conn.Close()
 
-	// filepath：namespace/user/相对路径/文件名
-	filepath := common.FilePath(user,path,filename)
-	_, err := os.Create(filepath)
+	_,err := common.NewFile(username,path,filename)
 	if err != nil {
-		log.Println("Error occur when writing:", err)
-		conn.Write([]byte("error"))
+		conn.Write([]byte(UNKNOWN_ERR))
 		return
 	}
 
+	// redisFilePath：user/相对路径/文件名
+	redisFilePath := common.GenerateFileName(username,path,filename)
+	blockName := common.GenerateBlockName(username,path,filename)
 	// 计时器
 	now := time.Now()
 	begin := now.Local().UnixNano() / (1000 * 1000)
-
-	fileName := common.ToSha(filepath)
 
 	// 获取数据
 	buf := make([]byte, 1024*1024)
@@ -38,11 +36,13 @@ func Write(user string,path string, filename string, conn net.Conn) {
 	cur := 0 // 分块编号
 	wc := sync.WaitGroup{}
 
+	var sum int
 	for {
 		n, err := conn.Read(buf)
+		sum += n
 		if err != nil {
 			if err == io.EOF {
-				log.Printf("Receive file %s from %s ended!", fileName, conn.RemoteAddr().String())
+				log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
 				break
 			} else {
 				log.Println("conn.Read err =", err)
@@ -50,72 +50,49 @@ func Write(user string,path string, filename string, conn net.Conn) {
 			}
 		}
 		if n == 0 {
-			log.Printf("Receive file %s from %s ended!", fileName, conn.RemoteAddr().String())
+			log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
 			break
 		}
 		buf2 = append(buf2, buf[:n]...)
 		if len(buf2) >= BlockSize {
-			tmpFileName := fileName + "-" + strconv.Itoa(cur)
+			tmpFileName := blockName + "-" + strconv.Itoa(cur)
 			cur++
 			wc.Add(1)
-			go WriteToServer(tmpFileName, user, buf2[:BlockSize], &wc)
+			go WriteToServer(tmpFileName, buf2[:BlockSize], &wc)
 			buf2 = buf2[BlockSize:]
 		}
 	}
 	if len(buf2) > 0 {
-		tmpFileName := fileName + "-" + strconv.Itoa(cur)
-		go WriteToServer(tmpFileName, user, buf2, &wc)
+		tmpFileName := blockName + "-" + strconv.Itoa(cur)
+		go WriteToServer(tmpFileName, buf2, &wc)
 	}
 	wc.Wait()
 
 	end := time.Now().Local().UnixNano() / (1000 * 1000)
-	log.Printf("Send file %s to %s ended! Timecost: %d ms", fileName, conn.RemoteAddr().String(), end-begin)
+	DB.UpdateFileInfo(redisFilePath,username,sum)
+	log.Printf("Send file %s to %s ended! Timecost: %d ms", filename, conn.RemoteAddr().String(), end-begin)
 }
 
-// 有bug，需要修复。若服务器返回error，无法处理错误。参数也应该修改
-func WriteToServer(fileName string, user string, file []byte, wc *sync.WaitGroup) {
-	conn, err := net.Dial("tcp", "43.132.181.175:11111")
-	defer conn.Close()
+func WriteToServer(fileName string, file []byte, wc *sync.WaitGroup) {
+	conn, err := net.Dial("tcp", common.GetServerAddr())
 	if err != nil {
 		fmt.Println("net.Dial err = ", err)
 		return
 	}
+	defer conn.Close()
+	defer wc.Add(-1)
+
+	byteStream := make([]byte, 0)
+	byteStream = append(byteStream, []byte(strconv.Itoa(1))...)
+	shafileName := common.ToSha(fileName)
+
+	byteStream = append(byteStream, []byte(shafileName)...)
+	_, _ = conn.Write(byteStream)
+
 	buf := make([]byte, 1024)
-
-	conn.Write([]byte(user))
 	n, err := conn.Read(buf)
-	if err != nil {
-		fmt.Println("conn.Read err", err)
+	fmt.Println(string(buf[:n]))
+	if "0" == string(buf[:n]) {
+		_, _ = conn.Write(file)
 	}
-
-	if "ok" == string(buf[:n]){
-		conn.Write([]byte(strconv.Itoa(1)))
-		n, err = conn.Read(buf)
-		if err != nil {
-			fmt.Println("conn.Read err", err)
-		}
-		if "ok" == string(buf[:n]) {
-			conn.Write([]byte(fileName))
-			n, err := conn.Read(buf)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			if "ok" == string(buf[:n]) {
-				fmt.Println("开始上传文件")
-				conn.Write(file)
-			}else{
-				log.Println("Write to server err")
-				return
-			}
-		}else{
-			log.Println("Write to server err")
-			return
-		}
-	}else{
-		log.Println("Write to server err")
-		return
-	}
-
-	wc.Add(-1)
 }

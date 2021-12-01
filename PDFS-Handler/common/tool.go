@@ -1,9 +1,8 @@
 package common
 
 import (
-	"fmt"
 	"github.com/go-ping/ping"
-	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"time"
@@ -11,44 +10,40 @@ import (
 
 const blockSize int = 64000000 //64MB
 
-func GetFileName(path string) string {
-	words := strings.FieldsFunc(path, func(r rune) bool {
-		return r == '/'
-	})
-	return words[len(words)-1]
+
+func GenerateFileName(username string,path string,filename string) string {
+	if path[len(path)-1] == '/' {
+		path = path[:len(path)]
+	}
+
+	newFilename := strings.Join([]string{username,path,"/",filename},"")
+	return newFilename
 }
 
-func GetFileBlockNums(path string) int {
-	file, err := ioutil.ReadFile(path)
+func GenerateBlockName(username string,path string,filename string) string{
+	return ToSha(GenerateFileName(username,path,filename))
+}
+
+func NewFile(username string,path string,filename string) (*os.File,error) {
+	filePath := strings.Join([]string{GetNamespacePath(),username,path,filename},"/")
+	file, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Error occur when creating file:",err)
 	}
-	return (len(file) + blockSize - 1) / blockSize
+	return file,nil
 }
-
-func IsExist(path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	if os.IsNotExist(err) {
-		return false
-	}
-	return false
-}
-
 func GetLentcy(ip string) int {
-	pinger, err := ping.NewPinger(ip)
+	ping, err := ping.NewPinger(ip)
 	if err != nil {
 		panic(err)
 	}
-	pinger.Count = 3
-	pinger.Timeout = time.Second * 2
-	err = pinger.Run()
+	ping.Count = 3
+	ping.Timeout = time.Second * 2
+	err = ping.Run()
 	if err != nil {
 		panic(err)
 	}
-	stats := pinger.Statistics().Rtts
+	stats := ping.Statistics().Rtts
 	if len(stats) == 0 {
 		return -1
 	}
@@ -56,7 +51,6 @@ func GetLentcy(ip string) int {
 	for _, t := range stats {
 		sum += int(t.Microseconds())
 	}
-
 	return sum / len(stats)
 }
 
