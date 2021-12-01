@@ -1,7 +1,9 @@
 package main
 
 import (
+	"PDFS-Server/DB"
 	"PDFS-Server/common"
+	"PDFS-Server/heartbeat"
 	"PDFS-Server/tcp"
 	"log"
 	"net"
@@ -18,7 +20,7 @@ func main() {
 	}
 
 	// 连接存放于Handler的Redis
-	// DB.RedisInit()
+	DB.RedisInit()
 
 	// 监听端口，默认9999
 	ServerAddr = common.GetServerAddr()
@@ -29,7 +31,14 @@ func main() {
 	}
 	defer Server.Close()
 	log.Println("Server start serving,listening to:", ServerAddr)
-	// go heartbeat.HeartBeatTimer()
+
+	// 初始化redis
+	redisConn := DB.RedisInit()
+	if redisConn == nil {
+		log.Println("Redis connect failed.Please check if redis reliable.")
+		return
+	}
+	go heartbeat.HeartBeatTimer(redisConn)
 
 	for {
 		for {
@@ -38,9 +47,8 @@ func main() {
 				log.Println("Error occur when Server.Accept:", err)
 				return
 			}
-			log.Println("Get accept from", conn.RemoteAddr().String(),",Serving ...")
+			log.Println("Get accept from", conn.RemoteAddr().String(), ",Serving ...")
 			go tcp.HandleConn(conn)
 		}
 	}
 }
-

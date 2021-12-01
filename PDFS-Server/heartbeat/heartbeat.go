@@ -4,35 +4,30 @@ import (
 	"PDFS-Server/DB"
 	"PDFS-Server/common"
 	"fmt"
+	"github.com/gomodule/redigo/redis"
 	"io/ioutil"
+	"log"
 	"time"
 )
 
 var blockPath string
 var ServerAddr string
 
-func HeartBeatTimer(){
+func HeartBeatTimer(conn redis.Conn) {
 	blockPath = common.GetBlocksPath()
 	ServerAddr = common.GetServerAddr()
-	for{
-		go HeartBeat()
-		// 每二十秒更新一次
-		time.Sleep(time.Second*20)
+	for {
+		log.Println("Heartbeating")
+		HeartBeat(blockPath, conn)
+		// 每十秒更新一次
+		time.Sleep(time.Second * 10)
 	}
 }
 
-func HeartBeat(){
-	DFS(blockPath)
-}
-
-func DFS(curPath string) {
-	if curPath[len(curPath)-1] != '/' {
-		curPath += "/"
-	}
-
-	files, err := ioutil.ReadDir(curPath)
+func HeartBeat(blockPath string, conn redis.Conn) {
+	files, err := ioutil.ReadDir(blockPath)
 	if err != nil {
-		fmt.Println("read file path error", err)
+		fmt.Println("Error occur when reading blocks path:", err)
 		return
 	}
 
@@ -44,10 +39,8 @@ func DFS(curPath string) {
 
 	for _, fi := range files {
 		if !fi.IsDir() {
-			DB.UpdateBlockInfo(curPath+fi.Name(), ServerAddr, time.Now().Unix())
-		} else {
-			DFS(curPath+fi.Name())
+			// fmt.Println(fi.Name())
+			DB.UpdateBlockInfo(fi.Name(), ServerAddr, time.Now().Unix(), conn)
 		}
 	}
-
 }

@@ -24,6 +24,7 @@
         <method importPath="net" receiver="Conn" name="Close" />
         <method importPath="os" receiver="*File" name="Close" />
         <method importPath="net" receiver="Listener" name="Close" />
+        <method importPath="github.com/gomodule/redigo/redis" receiver="Conn" name="Close" />
       </methods>
     </inspection_tool>
   </profile>

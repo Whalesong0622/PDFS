@@ -1,61 +1,32 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"github.com/gomodule/redigo/redis"
 )
 
-type AddrConfigStruct struct {
-	ServerAddr   string `json:"server_addr"`
-	HandlerAddr   string `json:"handler_addr"`
-}
 
-type PathConfigStruct struct {
-	BlocksPath   string `json:"blocks_path"`
-}
 
-type Package struct {
-	User string `json:"user"`
-	Op int `json:"op"`
-	Path string `json:"path"`
-}
-
-var AddrConfig AddrConfigStruct
-var PathConfig PathConfigStruct
-
-func main() {
-	jsonFile, err := os.Open("./config.json")
+func main(){
+	//连接到redis
+	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
-
+		fmt.Println("连接错误，err=", err)
+		return
 	}
-	defer jsonFile.Close()
-
-	pa := Package{
-		User: "whaleshark",
-		Path : "haha",
+	defer conn.Close()
+	//向redis写入数据
+	_, err1 := conn.Do("Set", "name", "gong")
+	if err1 != nil {
+		fmt.Println("set err=", err1)
+		return
 	}
-	fileValue, _ := ioutil.ReadAll(jsonFile)
-
-	json.Unmarshal(fileValue, &AddrConfig)
-	json.Unmarshal(fileValue, &PathConfig)
-
-	fmt.Println(AddrConfig)
-	fmt.Println(PathConfig)
-
-	asdf,err := json.Marshal(pa)
-	pp := GetRequest(asdf)
-	fmt.Println(pp.User)
-	file,err := os.Create("123.json")
-	file.WriteString("{\n	\"blocks_path\": \"/Users/whaleshark/Downloads/pdfs/blocks/\",\n")
-	file.WriteString("	\"server_addr\": \"127.0.0.1:9999\",\n")
-	file.WriteString("	\"handler_addr\": \"127.0.0.1:11111\"\n}")
-
-	fmt.Println(pp.Op)
-}
-
-func GetRequest(RequestPackage []byte) (p Package) {
-	json.Unmarshal(RequestPackage,&p)
-	return p
+	//向redis读取数据，返回的r是个空接口
+	r, err2 := redis.String(conn.Do("Get", "name"))
+	if err2 != nil {
+		fmt.Println("get err=", err2)
+	}
+	fmt.Println("操作set")
+	fmt.Println("操作get r=", r)
+	return
 }

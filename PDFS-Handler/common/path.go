@@ -42,8 +42,7 @@ func Init() error {
 			log.Println("Error occur when creating config.json:", err)
 			return err
 		}
-		_, _ = jsonFile.WriteString("{\n    \"server_addr\": \"127.0.0.1:9999\",\n")
-		_, _ = jsonFile.WriteString("	\"handler_addr\": \"127.0.0.1:11111\"\n}")
+		DefaultConfigInit(jsonFile)
 	}
 	defer jsonFile.Close()
 
