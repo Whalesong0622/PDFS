@@ -1,6 +1,6 @@
 {
     "server_addr": "127.0.0.1:9999",
 	"handler_addr": "127.0.0.1:11111",
-	"handler_redis": "127.0.0.1",
+	"handler_redis": "127.0.0.1:6379",
 	"blocks_path": "blocks"
 }

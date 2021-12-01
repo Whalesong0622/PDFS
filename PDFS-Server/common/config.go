@@ -21,7 +21,7 @@ var PathConfig PathConfigStruct
 
 func DefaultConfigInit(file *os.File) {
 	_, _ = file.WriteString("{\n")
-	_, _ = file.WriteString("   \"server_addr\": \"127.0.0.1:9999\",\n")
+	_, _ = file.WriteString("	\"server_addr\": \"127.0.0.1:9999\",\n")
 	_, _ = file.WriteString("	\"handler_addr\": \"127.0.0.1:11111\",\n")
 	_, _ = file.WriteString("	\"handler_redis\": \"127.0.0.1:6379\",\n")
 	_, _ = file.WriteString("	\"blocks_path\": \"blocks\"\n")

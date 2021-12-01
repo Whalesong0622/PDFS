@@ -15,10 +15,16 @@ type Package struct {
 	FileName string
 }
 
+// 返回值
 const OK = "0"
-const ERROR = "255"
+const UNKNOWN_ERR = "1"
+const FILE_NOT_EXIST = "2"
+const OP_NOT_EXIST = "3"
+
+// 操作
 const WRITE_OP = "1"
 const READ_OP = "2"
+const DEL_OP = "3"
 
 func HandleConn(conn net.Conn) {
 	buf := make([]byte, 1024)
@@ -59,11 +65,10 @@ func HandleConn(conn net.Conn) {
 
 		}else{
 			log.Println("Not found",request.FileName, "Reply error")
-			_, _ = conn.Write([]byte(ERROR))
+			_, _ = conn.Write([]byte(FILE_NOT_EXIST))
 			conn.Close()
 			return
 		}
-
 		log.Println("Receive read request from:", conn.RemoteAddr().String(), "Reply ok")
 		_, _ = conn.Write([]byte(OK))
 
@@ -77,9 +82,33 @@ func HandleConn(conn net.Conn) {
 			log.Println("Sending file", request.FileName, "to", conn.RemoteAddr())
 			api.SendFile(request.FileName, conn)
 		}
+	} else if request.Op == DEL_OP {
+		// 首先检查块是否存在
+		filePath := strings.Join([]string{common.GetBlocksPath(),request.FileName},"/")
+		fmt.Println(filePath)
+		info, err := os.Stat(filePath)
+		if err == nil && !info.IsDir() {
+
+		}else{
+			log.Println("Not found",request.FileName, ",Reply error")
+			_, _ = conn.Write([]byte(FILE_NOT_EXIST))
+			conn.Close()
+			return
+		}
+		log.Println("Receive delete request from:", conn.RemoteAddr().String(),"Found file",request.FileName)
+
+		err = os.Remove(filePath)
+		if err != nil {
+			log.Println("Error occur when deleting file:",err)
+			_, _ = conn.Write([]byte(UNKNOWN_ERR))
+			conn.Close()
+			return
+		}
+		log.Println("Delete file",request.FileName,"success.Reply ok.")
+		_, _ = conn.Write([]byte(OK))
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
-		_, _ = conn.Write([]byte("error"))
+		_, _ = conn.Write([]byte(OP_NOT_EXIST))
 		conn.Close()
 	}
 }

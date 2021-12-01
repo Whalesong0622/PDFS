@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"io/ioutil"
-	"log"
 	"time"
 )
 
@@ -17,7 +16,7 @@ func HeartBeatTimer(conn redis.Conn) {
 	blockPath = common.GetBlocksPath()
 	ServerAddr = common.GetServerAddr()
 	for {
-		log.Println("Heartbeating")
+		// log.Println("Heartbeating")
 		HeartBeat(blockPath, conn)
 		// 每十秒更新一次
 		time.Sleep(time.Second * 10)
