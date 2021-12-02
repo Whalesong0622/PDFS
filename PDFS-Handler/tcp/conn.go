@@ -71,11 +71,9 @@ func HandleConn(conn net.Conn) {
 		conn.Close()
 		return
 	} else if request.Op == WRITE_OP {
-		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok.Start receiving file.")
-		_, _ = conn.Write([]byte(common.OK))
 		api.Write(request.username, request.path, request.filename, conn)
 	} else if request.Op == READ_OP {
-
+		api.Read(request.username, request.path, request.filename, conn)
 	} else if request.Op == DEL_OP {
 
 	} else if request.Op == NEW_PATH_OP {

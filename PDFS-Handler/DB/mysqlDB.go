@@ -36,7 +36,7 @@ func MySQLConnect() (*sql.DB, error) {
 func MySQLInit() {
 	db, err := MySQLConnect()
 	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:",err)
+		log.Println("Error occur when connecting To MySQL err:", err)
 	}
 	_, _ = db.Exec(createTableSQL)
 }
@@ -44,7 +44,7 @@ func MySQLInit() {
 func NewUserToDB(username string, passwd string) string {
 	db, err := MySQLConnect()
 	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:",err)
+		log.Println("Error occur when connecting To MySQL err:", err)
 		return common.UNKNOWN_ERR
 	}
 	defer db.Close()
@@ -71,13 +71,13 @@ func NewUserToDB(username string, passwd string) string {
 func DelUserToDB(username string, passwd string) string {
 	db, err := MySQLConnect()
 	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:",err)
+		log.Println("Error occur when connecting To MySQL err:", err)
 		return common.UNKNOWN_ERR
 	}
 	defer db.Close()
 
 	if !IsUserExist(username) {
-		log.Println("Error occur when deleting user,",username,"not exist.")
+		log.Println("Error occur when deleting user,", username, "not exist.")
 		return common.USER_NOT_EXIST
 	}
 
@@ -88,7 +88,7 @@ func DelUserToDB(username string, passwd string) string {
 	SQL := "delete from people_tb where username = ?"
 	_, err = db.Exec(SQL, username)
 	if err != nil {
-		log.Println("Error occur when deleting user", username, ":",err)
+		log.Println("Error occur when deleting user", username, ":", err)
 		return common.UNKNOWN_ERR
 	}
 	log.Println("Delete user", username, "successfully.")
@@ -99,14 +99,14 @@ func DelUserToDB(username string, passwd string) string {
 func PasswdCheck(username string, passwd string) string {
 	db, err := MySQLConnect()
 	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:",err)
+		log.Println("Error occur when connecting To MySQL err:", err)
 		return common.UNKNOWN_ERR
 	}
 	defer db.Close()
 
 	exist := IsUserExist(username)
 	if !exist {
-		fmt.Println("Check user passwd failed,user",username, "not exist.")
+		fmt.Println("Check user passwd failed,user", username, "not exist.")
 		return common.USER_NOT_EXIST
 	}
 	SQL := "select * from people_tb where username = ?"
@@ -142,12 +142,18 @@ func ChangePasswd(username string, passwd string, newpasswd string) string {
 	SQL := "update people_tb set passwd = ? where username = ?"
 	args := []string{common.ToSha(newpasswd), username}
 
-	_, err = db.Exec(SQL, args[0], args[1])
+	row, err := db.Exec(SQL, args[0], args[1])
 	if err != nil {
 		log.Println("Error occur when changing user passwd:", username, err)
 		return common.UNKNOWN_ERR
 	}
-	log.Println("Change", username,"password successfully.")
+
+	rowsaffected, err := row.RowsAffected()
+	if err != nil || rowsaffected != 1 {
+		log.Println("Error occur when changing user passwd:", username, err)
+		return common.UNKNOWN_ERR
+	}
+	log.Println("Change", username, "password successfully.")
 	return common.OK
 }
 

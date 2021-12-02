@@ -28,11 +28,11 @@ func UpdateNamespaceInfo(fileName string,ip string,unixTime int64,conn redis.Con
 	return err
 }
 
-func UpdateFileInfo(path string,username string,size int) error {
+func UpdateFileInfo(blockname string,username string,size int,filename string) error {
 	conn := RedisInit()
-	_, err := conn.Do("HMSET", "lastmodify",time.Now().Unix(),"lastheartbeat",time.Now().Unix(),"username",username,"blocknums",size/BlockSize,"size",size)
+	_, err := conn.Do("HMSET", blockname,"lastmodify",time.Now().Unix(),"filename",filename,"username",username,"blocknums",size/BlockSize,"size",size)
 	if err != nil {
-		fmt.Println("set err=", err)
+		fmt.Println("Error occur when updateFileInfo:", err)
 	}
 	return err
 }
@@ -43,7 +43,6 @@ func GetFileBlockNums(blockname string) (int,error) {
 	if err != nil {
 		return 0,err
 	}
-
 	return strconv.Atoi(reply.(string))
 }
 
