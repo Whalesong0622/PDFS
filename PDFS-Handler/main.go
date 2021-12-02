@@ -5,6 +5,7 @@ import (
 	"PDFS-Handler/common"
 	"PDFS-Handler/tcp"
 	"PDFS-Handler/heartbeat"
+	"fmt"
 	"log"
 	"net"
 )
@@ -37,6 +38,7 @@ func main() {
 	}
 	go heartbeat.HeartBeatTimer(redisConn)
 
+	fmt.Println()
 	for {
 		for {
 			conn, err := Server.Accept()
