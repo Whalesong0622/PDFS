@@ -1,9 +1,9 @@
 package common
 
 import (
-	"PDFS-Server/api"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"time"
 )
@@ -52,7 +52,7 @@ func Init() bool {
 	// 注册自己的ip到handler中
 	success := false
 	for i := 0; i < 10; i++ {
-		success = api.RegisterToHandler()
+		success = RegisterToHandler()
 		if !success {
 			log.Println("Connect to handler failed,retry after 10s.")
 			time.Sleep(time.Second * 10)
@@ -65,4 +65,26 @@ func Init() bool {
 	}
 	log.Println("Server init success.")
 	return true
+}
+
+func RegisterToHandler() bool {
+	conn, err := net.Dial("tcp",GetHandlerAddr())
+	if err != nil {
+		return false
+	}
+
+	// 头部127表示请求注册，然后一个字节代表ip地址长度，并将ip地址添加到长度信息后
+	req := make([]byte,0)
+	req = append(req, 127,byte(len(GetServerAddr())))
+	req = append(req, []byte(GetServerAddr())...)
+	_, _ = conn.Write(req)
+	buf := make([]byte,1024)
+	n,err := conn.Read(buf)
+	if err != nil {
+		return false
+	}else if "0" == string(buf[:n]){
+		return true
+	}else{
+		return false
+	}
 }
