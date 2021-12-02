@@ -1,18 +1,12 @@
 package tcp
 
 import (
+	"PDFS-Handler/DB"
 	"PDFS-Handler/api"
+	"PDFS-Handler/common"
 	"log"
 	"net"
 )
-
-// 返回值
-const OK = "0"
-const UNKNOWN_ERR = "1"
-const FILE_NOT_EXIST = "2"
-const OP_NOT_EXIST = "3"
-const PASSWD_ERROR = "4"
-const USER_EXIST = "5"
 
 // 操作
 const NEW_USER_OP = "1"         // 新建用户
@@ -34,7 +28,7 @@ type Package struct {
 	newpasswd string
 	filename  string
 	path      string
-	ip		  string
+	ip        string
 }
 
 func HandleConn(conn net.Conn) {
@@ -52,40 +46,49 @@ func HandleConn(conn net.Conn) {
 	success := depackage(byteStream, &request)
 	if !success {
 		log.Println("Error occur when depackaging request.")
-		conn.Write([]byte(UNKNOWN_ERR))
+		_, _ = conn.Write([]byte(common.PARAMETER_ERROR))
 		conn.Close()
 		return
 	}
 
 	if request.Op == NEW_USER_OP {
-		success := api.NewUser(request.username, request.passwd)
-		if !success  {
-			_, _ = conn.Write([]byte(UNKNOWN_ERR))
-			conn.Close()
-			return
-		}
-		_, _ = conn.Write([]byte(OK))
+		reply := api.NewUser(request.username, request.passwd)
+		_, _ = conn.Write([]byte(reply))
 		conn.Close()
 	} else if request.Op == DEL_USER_OP {
 		reply := api.DelUser(request.username, request.passwd)
-		if reply != "" {
-			_, _ = conn.Write([]byte(reply))
-			conn.Close()
-			return
-		}
-		_, _ = conn.Write([]byte(OK))
+		_, _ = conn.Write([]byte(reply))
 		conn.Close()
+		return
+	} else if request.Op == CHANGE_PASSWD_OP {
+		reply := DB.ChangePasswd(request.username, request.passwd, request.newpasswd)
+		_, _ = conn.Write([]byte(reply))
+		conn.Close()
+		return
+	} else if request.Op == LOGIN_OP {
+		reply := DB.PasswdCheck(request.username, request.passwd)
+		_, _ = conn.Write([]byte(reply))
+		conn.Close()
+		return
 	} else if request.Op == WRITE_OP {
 		log.Println("Receive write request from:", conn.RemoteAddr().String(), "Reply ok.Start receiving file.")
-		_, _ = conn.Write([]byte(OK))
+		_, _ = conn.Write([]byte(common.OK))
 		api.Write(request.username, request.path, request.filename, conn)
 	} else if request.Op == READ_OP {
 
 	} else if request.Op == DEL_OP {
 
+	} else if request.Op == NEW_PATH_OP {
+
+	} else if request.Op == DEL_PATH_OP {
+
+	} else if request.Op == SERVER_CONNECT_OP {
+
+	} else if request.Op == ASK_FILES_OP {
+
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
-		_, _ = conn.Write([]byte(OP_NOT_EXIST))
+		_, _ = conn.Write([]byte(common.OP_NOT_EXIST))
 		conn.Close()
 	}
 }

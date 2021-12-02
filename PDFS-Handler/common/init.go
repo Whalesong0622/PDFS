@@ -1,7 +1,6 @@
 package common
 
 import (
-	"PDFS-Handler/DB"
 	"io/ioutil"
 	"log"
 	"os"
@@ -47,8 +46,6 @@ func Init() error {
 			return err
 		}
 	}
-
-	DB.MySQLInit()
 
 	log.Println("Server init success.")
 	return nil

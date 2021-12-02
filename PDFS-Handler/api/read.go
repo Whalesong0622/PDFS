@@ -21,7 +21,7 @@ func Read(username string,path string,filename string, conn net.Conn) {
 	ipList := make([]string, 0)
 	blockNums, err := DB.GetFileBlockNums(blockName)
 	if err != nil {
-		_, _ = conn.Write([]byte(UNKNOWN_ERR))
+		_, _ = conn.Write([]byte(common.UNKNOWN_ERR))
 		return
 	}
 

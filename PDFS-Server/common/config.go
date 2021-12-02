@@ -29,10 +29,11 @@ func DefaultConfigInit(file *os.File) {
 }
 
 func GetConfig(config []byte, AddrConfig *AddrConfigStruct, PathConfig *PathConfigStruct) {
-	json.Unmarshal(config, AddrConfig)
-	json.Unmarshal(config, PathConfig)
+	_ = json.Unmarshal(config, AddrConfig)
+	_ = json.Unmarshal(config, PathConfig)
 	log.Println("Server addr:", AddrConfig.ServerAddr)
 	log.Println("Handler addr:", AddrConfig.HandlerAddr)
+	log.Println("Redis addr:", AddrConfig.RedisAddr)
 	log.Println("Blocks path:", PathConfig.BlocksPath)
 }
 

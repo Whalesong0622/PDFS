@@ -3,9 +3,8 @@ package main
 import (
 	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
-	"PDFS-Handler/tcp"
 	"PDFS-Handler/heartbeat"
-	"fmt"
+	"PDFS-Handler/tcp"
 	"log"
 	"net"
 )
@@ -19,6 +18,8 @@ func main() {
 		log.Println("Init Server error:", err)
 		return
 	}
+
+	DB.MySQLInit()
 
 	// 监听端口，默认11111
 	HandlerAddr = common.GetServerAddr()
@@ -38,7 +39,6 @@ func main() {
 	}
 	go heartbeat.HeartBeatTimer(redisConn)
 
-	fmt.Println()
 	for {
 		for {
 			conn, err := Server.Accept()
