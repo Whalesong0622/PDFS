@@ -75,7 +75,7 @@ func Write(username string, path string, filename string, conn net.Conn) {
 	log.Printf("Send file %s to %s ended! Timecost: %d ms", filename, conn.RemoteAddr().String(), end-begin)
 }
 
-func WriteToServer(fileName string, file []byte, wc *sync.WaitGroup) {
+func WriteToServer(BlockName string, file []byte, wc *sync.WaitGroup) {
 	conn, err := net.Dial("tcp", common.GetServerAddr())
 	if err != nil {
 		fmt.Println("net.Dial err = ", err)
@@ -86,9 +86,7 @@ func WriteToServer(fileName string, file []byte, wc *sync.WaitGroup) {
 
 	byteStream := make([]byte, 0)
 	byteStream = append(byteStream, []byte(strconv.Itoa(1))...)
-	shafileName := common.ToSha(fileName)
-
-	byteStream = append(byteStream, []byte(shafileName)...)
+	byteStream = append(byteStream, []byte(BlockName)...)
 	_, _ = conn.Write(byteStream)
 
 	buf := make([]byte, 1024)

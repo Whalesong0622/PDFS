@@ -16,8 +16,8 @@ const LOGIN_OP = "4"            // 用户登陆
 const WRITE_OP = "5"            // 上传文件
 const READ_OP = "6"             // 读取文件
 const DEL_OP = "7"              // 删除文件
-const NEW_PATH_OP = "8"         // 新建路径
-const DEL_PATH_OP = "9"         // 删除路径
+const ADD_DIR_OP = "8"         // 新建路径
+const DEL_DIR_OP = "9"         // 删除路径
 const SERVER_CONNECT_OP = "127" // 服务器请求注册
 const ASK_FILES_OP = "255"      // 请求该目录下文件
 
@@ -29,6 +29,7 @@ type Package struct {
 	filename  string
 	path      string
 	ip        string
+	dirname   string
 }
 
 func HandleConn(conn net.Conn) {
@@ -75,11 +76,11 @@ func HandleConn(conn net.Conn) {
 	} else if request.Op == READ_OP {
 		api.Read(request.username, request.path, request.filename, conn)
 	} else if request.Op == DEL_OP {
-
-	} else if request.Op == NEW_PATH_OP {
-
-	} else if request.Op == DEL_PATH_OP {
-
+		api.DelFile(request.username, request.path, request.filename, conn)
+	} else if request.Op == ADD_DIR_OP {
+		api.AddDir(request.username, request.path,request.dirname, conn)
+	} else if request.Op == DEL_DIR_OP {
+		api.DelDir(request.username, request.path,request.dirname, conn)
 	} else if request.Op == SERVER_CONNECT_OP {
 
 	} else if request.Op == ASK_FILES_OP {

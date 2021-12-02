@@ -32,24 +32,7 @@ func depackage(byteStream []byte, pg *Package) bool {
 			return false
 		}
 	} else if pg.Op == WRITE_OP || pg.Op == READ_OP || pg.Op == DEL_OP {
-		filenameLength := int(byteStream[2+usernameLength])
-		if filenameLength == 0{
-			return false
-		}
-		pg.filename = string(byteStream[3+usernameLength : 3+usernameLength+filenameLength])
-		if pg.filename == ""{
-			return false
-		}
-		pathLength:= int(byteStream[3+usernameLength+filenameLength])
-		if pathLength == 0{
-			return false
-		}
-		pg.path = string(byteStream[4+usernameLength+filenameLength:4+usernameLength+filenameLength+pathLength])
-		if pg.path == ""{
-			return false
-		}
-	} else if pg.Op == NEW_PATH_OP || pg.Op == DEL_PATH_OP || pg.Op == ASK_FILES_OP {
-		pathLength:= int(byteStream[2+usernameLength])
+		pathLength := int(byteStream[2+usernameLength])
 		if pathLength == 0{
 			return false
 		}
@@ -57,6 +40,33 @@ func depackage(byteStream []byte, pg *Package) bool {
 		if pg.path == ""{
 			return false
 		}
+		filenameLength:= int(byteStream[3+usernameLength+pathLength])
+		if filenameLength == 0{
+			return false
+		}
+		pg.filename = string(byteStream[4+usernameLength+pathLength:4+usernameLength+pathLength+filenameLength])
+		if pg.path == ""{
+			return false
+		}
+	} else if pg.Op == ADD_DIR_OP || pg.Op == DEL_DIR_OP {
+		pathLength := int(byteStream[2+usernameLength])
+		if pathLength == 0{
+			return false
+		}
+		pg.path = string(byteStream[3+usernameLength : 3+usernameLength+pathLength])
+		if pg.path == ""{
+			return false
+		}
+		dirnameLength:= int(byteStream[3+usernameLength+pathLength])
+		if dirnameLength == 0{
+			return false
+		}
+		pg.dirname = string(byteStream[4+usernameLength+pathLength:4+usernameLength+pathLength+dirnameLength])
+		if pg.path == ""{
+			return false
+		}
+	} else if pg.Op == ASK_FILES_OP {
+
 	}
 	return true
 }

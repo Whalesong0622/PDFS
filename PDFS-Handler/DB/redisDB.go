@@ -37,6 +37,15 @@ func UpdateFileInfo(blockname string,username string,size int,filename string) e
 	return err
 }
 
+func DelFileInfo(blockname string) error {
+	conn := RedisInit()
+	_, err := conn.Do("del", blockname)
+	if err != nil {
+		fmt.Println("Error occur when updateFileInfo:", err)
+	}
+	return err
+}
+
 func GetFileBlockNums(blockname string) (int,error) {
 	conn := RedisInit()
 	reply,err := conn.Do("HGET",blockname,"blocknums")
@@ -46,11 +55,25 @@ func GetFileBlockNums(blockname string) (int,error) {
 	return strconv.Atoi(reply.(string))
 }
 
+// 获取每个分块的iplist,并将过期的地址删除
 func GetBlockIpList(blocknames string) ([]string,error){
 	conn := RedisInit()
 	reply,err := conn.Do("HKEYS",blocknames)
 	if err != nil {
 		return nil,err
+	}
+	IpList := reply.([]string)
+	for i := 0;i < len(IpList);i++ {
+		ip := IpList[i]
+		reply, err := conn.Do("HGET",ip)
+		if err != nil {
+			return nil,err
+		}
+		lastheartbeat := reply.(int64)
+		if time.Now().Unix() - lastheartbeat > 30 {
+			_,_ = conn.Do("HDEL",blocknames,ip)
+			IpList = append(IpList[:i],IpList[i+1])
+		}
 	}
 	return reply.([]string), nil
 }
