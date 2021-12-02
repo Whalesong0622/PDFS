@@ -5,6 +5,7 @@ import (
 	"PDFS-Server/common"
 	"PDFS-Server/heartbeat"
 	"PDFS-Server/tcp"
+	"fmt"
 	"log"
 	"net"
 )
@@ -13,9 +14,9 @@ var ServerAddr string
 
 func main() {
 	// 初始化
-	err := common.Init()
-	if err != nil {
-		log.Println("Init Server error:", err)
+	success := common.Init()
+	if  !success {
+		log.Println("Init Server error.")
 		return
 	}
 
@@ -40,6 +41,7 @@ func main() {
 	}
 	go heartbeat.HeartBeatTimer(redisConn)
 
+	fmt.Println()
 	for {
 		for {
 			conn, err := Server.Accept()

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"PDFS-Handler/DB"
 	"io/ioutil"
 	"log"
 	"os"
@@ -31,14 +32,14 @@ func Init() error {
 	defer jsonFile.Close()
 
 	// 读取config.json
-	config,_ := ioutil.ReadAll(jsonFile)
+	config, _ := ioutil.ReadAll(jsonFile)
 	GetConfig(config, &AddrConfig, &PathConfig)
 
 	// 检查namespace目录是否存在
 	info, err = os.Stat(PathConfig.NamespacePath)
-	if err == nil && info.IsDir(){
+	if err == nil && info.IsDir() {
 		log.Println("Found namespace dir.")
-	}else{
+	} else {
 		log.Println("Not found namespace dir,creating namespace ...")
 		err := os.MkdirAll(PathConfig.NamespacePath, os.ModePerm)
 		if err != nil {
@@ -46,6 +47,8 @@ func Init() error {
 			return err
 		}
 	}
+
+	DB.MySQLInit()
 
 	log.Println("Server init success.")
 	return nil

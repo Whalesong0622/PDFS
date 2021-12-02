@@ -100,31 +100,53 @@ func DelUserToDB(username string, passwd string) bool {
 	}
 }
 
-func LoginPasswdCheck(username string, passwd string) bool {
+func LoginPasswdCheck(username string, passwd string) string {
 	db, err := MySQLConnect()
 	if err != nil {
 		fmt.Println(err)
-		return false
+		return common.UNKNOWN_ERR
 	}
 	defer db.Close()
 
+	exist := IsUserExist(username)
+	if !exist {
+		fmt.Println("Create user failed,user not exist.")
+		return common.USER_EXIST
+	}
 	SQL := "select * from people_tb where username = ?"
 	args := []string{username, common.ToSha(passwd)}
 
 	rows := db.QueryRow(SQL, args[0], args[1])
-	if err != nil {
-		log.Println("Error occur when deleting user:", username,err)
-		return false
-	}
 	var name string
 	var tb_passwd string
 	err = rows.Scan(&name, &tb_passwd)
 
 	if tb_passwd == common.ToSha(passwd) {
 		log.Println("Password correct,",username,"login successfully.")
-		return true
+		return common.OK
 	} else {
 		log.Println("Password incorrect,",username,"login failed.")
+		return common.PASSWD_ERROR
+	}
+}
+
+func IsUserExist(username string) bool {
+	db, err := MySQLConnect()
+	if err != nil {
+		fmt.Println(err)
 		return false
+	}
+	defer db.Close()
+	rows := db.QueryRow("select * from people_tb where username = ?", username)
+	if err != nil {
+		return false
+	}
+	var name string
+	var tb_passwd string
+	err = rows.Scan(&name, &tb_passwd)
+	if name == "" {
+		return false
+	}else{
+		return true
 	}
 }

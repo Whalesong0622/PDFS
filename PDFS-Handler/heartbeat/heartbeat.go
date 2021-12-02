@@ -40,7 +40,7 @@ func HeartBeat(namespacePath string, conn redis.Conn) {
 	for _, fi := range files {
 		if !fi.IsDir() {
 			// fmt.Println(fi.Name())
-			DB.UpdateNamespaceInfo(fi.Name(), ServerAddr, time.Now().Unix(), conn)
+			_ = DB.UpdateNamespaceInfo(fi.Name(), ServerAddr, time.Now().Unix(), conn)
 		} else {
 			HeartBeat(strings.Join([]string{namespacePath,fi.Name()},"/"),conn)
 		}

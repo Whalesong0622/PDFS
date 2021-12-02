@@ -32,6 +32,7 @@ func NewFile(username string,path string,filename string) (*os.File,error) {
 	}
 	return file,nil
 }
+
 func GetLentcy(ip string) int {
 	ping, err := ping.NewPinger(ip)
 	if err != nil {

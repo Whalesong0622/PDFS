@@ -114,6 +114,9 @@ func LoginPasswdCheck(username string, passwd string) bool {
 	err = rows.Scan(&name, &tb_passwd)
 	fmt.Println(err)
 	fmt.Println(name, tb_passwd)
+	if name == ""{
+		log.Printf("haha")
+	}
 	if tb_passwd == ToSha(passwd) {
 		return true
 	} else {
@@ -125,6 +128,7 @@ func LoginPasswdCheck(username string, passwd string) bool {
 
 var createTableSQL = "CREATE TABLE if not exists `people_tb` (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(50) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 func main() {
+	log.Println("1新建2删除3登陆")
 	db,err := MySQLConnect()
 	if err != nil {
 		fmt.Println(err)
