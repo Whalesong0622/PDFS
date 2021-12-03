@@ -19,7 +19,7 @@ func DelDir(username string, path string, dirname string,conn net.Conn) {
 	// 获取文件块名和文件路径
 	if !common.IsDir(username + "/"+ path) {
 		log.Println("Error occur when deleting directory,path not exist.")
-		conn.Write([]byte(common.PATH_NOT_EXIST))
+		_, _ = conn.Write([]byte(common.PATH_NOT_EXIST))
 		return
 	}
 

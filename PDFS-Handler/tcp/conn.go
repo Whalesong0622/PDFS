@@ -84,7 +84,7 @@ func HandleConn(conn net.Conn) {
 	} else if request.Op == SERVER_CONNECT_OP {
 
 	} else if request.Op == ASK_FILES_OP {
-
+		api.GetFilesInPath(request.username,request.path,conn)
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
 		_, _ = conn.Write([]byte(common.OP_NOT_EXIST))
