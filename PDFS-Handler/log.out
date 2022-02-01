@@ -1,9 +1,242 @@
-2022/02/01 13:35:54 Loading config.
-2022/02/01 13:35:54 Handler addr: 43.154.178.243:9999
-2022/02/01 13:35:54 Listen addr: 43.154.178.243:9999
-2022/02/01 13:35:54 Server addr: 43.154.178.243:11111
-2022/02/01 13:35:54 Redis addr: 127.0.0.1:6379
-2022/02/01 13:35:54 Namespace path: /usr/local/PDFS/namespace
-2022/02/01 13:35:54 Found namespace dir.
-2022/02/01 13:35:54 Server init success.
-2022/02/01 13:35:54 Server start serving,listening to: 10.0.4.12:9999
+2022/02/01 20:23:19 Loading config.
+2022/02/01 20:23:19 Handler addr: 43.154.178.243:9999
+2022/02/01 20:23:19 Listen addr: 43.154.178.243:9999
+2022/02/01 20:23:19 Server addr: 
+2022/02/01 20:23:19 Redis addr: 127.0.0.1:6379
+2022/02/01 20:23:19 Namespace path: /usr/local/PDFS/namespace
+2022/02/01 20:23:19 Found namespace dir.
+2022/02/01 20:23:19 Server init success.
+2022/02/01 20:23:19 Server start serving,listening to: 10.0.4.12:9999
+2022/02/01 20:31:47 Get accept from 43.132.181.175:34002
+2022/02/01 20:31:47 Receive login request.Username: YoitsuHolo
+Check user passwd failed,user YoitsuHolo not exist.
+2022/02/01 20:31:47 Password incorrest,return error to 43.132.181.175:34002
+2022/02/01 20:31:54 Get accept from 43.132.181.175:34014
+2022/02/01 20:31:54 Receive login request.Username: YoitsuHolo
+Check user passwd failed,user YoitsuHolo not exist.
+2022/02/01 20:31:54 Password incorrest,return error to 43.132.181.175:34014
+2022/02/01 20:32:25 Get accept from 43.132.181.175:34054
+2022/02/01 20:32:25 Receive new user request.Username: YoitsuHolo
+2022/02/01 20:32:25 New user YoitsuHolo create to MySQL success.
+2022/02/01 20:32:31 Get accept from 43.132.181.175:34062
+2022/02/01 20:32:32 Cookie check failed.
+2022/02/01 20:32:32 Error when depackage,cookie not found.Cookie: [0 0 116 0 45 0 112 0 114 0 111 0 106 0 101 0 99 0 116 0]
+2022/02/01 20:32:36 Get accept from 43.132.181.175:34072
+2022/02/01 20:32:36 Receive login request.Username: YoitsuHolo
+2022/02/01 20:32:36 Password correct: YoitsuHolo
+2022/02/01 20:32:36 Password correst,return cookie [82 253 252 7 33 130 101 79 22 63 95 15 154 98 29 114 149 102 199 77] to  43.132.181.175:34072
+2022/02/01 20:32:39 Get accept from 43.132.181.175:34078
+2022/02/01 20:32:39 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:32:39 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:32:39 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:33:01 Get accept from 43.132.181.175:34104
+2022/02/01 20:33:03 Get accept from 43.132.181.175:34114
+2022/02/01 20:33:03 Receive write request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:33:03 Write Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:33:03 File created,abs filepath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb filename: Test.txt
+2022/02/01 20:33:03 Return Server list: [43.154.178.243:11111]
+2022/02/01 20:33:05 Receive file Test.txt from 43.132.181.175:34114 ended!
+2022/02/01 20:33:05 Write a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb-0 to server 43.154.178.243:11111
+2022/02/01 20:33:05 Write a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb-0 to server 43.154.178.243:11111 success.
+2022/02/01 20:33:05 Send file Test.txt to 43.132.181.175:34114 ended! Timecost: 2069 ms
+2022/02/01 20:33:10 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:33:10 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:33:10 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:38:23 Get accept from 43.132.181.175:34482
+2022/02/01 20:38:24 Receive login request.Username: YoitsuHolo
+2022/02/01 20:38:24 Password correct: YoitsuHolo
+2022/02/01 20:38:24 Password correst,return cookie [16 3 124 77 123 187 4 7 209 226 198 73 129 133 90 216 104 29 13 134] to  43.132.181.175:34482
+2022/02/01 20:38:28 Get accept from 43.132.181.175:34486
+2022/02/01 20:38:29 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:38:29 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:38:29 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:38:34 Get accept from 43.132.181.175:34498
+2022/02/01 20:38:37 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:38:37 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:38:37 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:38:37 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:38:37 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:38:37 Return ip list to 43.132.181.175:34498 ended! Timecost: 1 ms
+2022/02/01 20:41:44 Get accept from 43.132.181.175:34706
+2022/02/01 20:41:44 Receive login request.Username: YoitsuHolo
+2022/02/01 20:41:44 Password correct: YoitsuHolo
+2022/02/01 20:41:44 Password correst,return cookie [209 233 30 0 22 121 57 203 102 148 210 196 34 172 210 8 160 7 41 57] to  43.132.181.175:34706
+2022/02/01 20:41:57 Get accept from 43.132.181.175:34718
+2022/02/01 20:41:57 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:41:57 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:41:57 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:42:01 Get accept from 43.132.181.175:34724
+2022/02/01 20:42:01 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:42:01 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:42:01 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:42:01 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:42:01 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:42:01 Return ip list to 43.132.181.175:34724 ended! Timecost: 0 ms
+2022/02/01 20:45:52 Get accept from 43.132.181.175:34980
+2022/02/01 20:45:54 Receive login request.Username: YoitsuHolo
+2022/02/01 20:45:54 Password correct: YoitsuHolo
+2022/02/01 20:45:54 Password correst,return cookie [72 127 105 153 235 157 24 164 71 132 4 93 135 243 198 124 242 39 70 233] to  43.132.181.175:34980
+2022/02/01 20:45:57 Get accept from 43.132.181.175:34988
+2022/02/01 20:45:58 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:45:58 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:45:58 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:46:10 Get accept from 43.132.181.175:35004
+2022/02/01 20:46:13 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:46:13 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:46:13 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:46:13 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:46:13 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:46:13 Return ip list to 43.132.181.175:35004 ended! Timecost: 0 ms
+2022/02/01 20:46:21 Get accept from 43.154.178.243:35392
+2022/02/01 20:46:26 Receive login request.Username: debug
+Check user passwd failed,user debug not exist.
+2022/02/01 20:46:26 Password incorrest,return error to 43.154.178.243:35392
+2022/02/01 20:46:34 Get accept from 43.154.178.243:35414
+2022/02/01 20:46:36 Receive new user request.Username: debug
+2022/02/01 20:46:36 New user debug create to MySQL success.
+2022/02/01 20:46:39 Get accept from 43.154.178.243:35428
+2022/02/01 20:46:42 Receive login request.Username: debug
+2022/02/01 20:46:42 Password correct: debug
+2022/02/01 20:46:42 Password correst,return cookie [149 175 90 37 54 121 81 186 162 255 108 212 113 196 131 241 95 185 11 173] to  43.154.178.243:35428
+2022/02/01 20:47:29 Get accept from 43.132.181.175:35098
+2022/02/01 20:47:29 Receive login request.Username: YoitsuHolo
+2022/02/01 20:47:29 Password correct: YoitsuHolo
+2022/02/01 20:47:29 Password correst,return cookie [179 124 88 33 182 217 85 38 164 26 149 4 104 11 78 124 139 118 58 27] to  43.132.181.175:35098
+2022/02/01 20:47:37 Get accept from 43.132.181.175:35110
+2022/02/01 20:47:38 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:47:38 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:47:38 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:47:43 Get accept from 43.132.181.175:35118
+2022/02/01 20:47:44 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:47:44 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:47:44 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:47:44 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:47:44 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:47:44 Return ip list to 43.132.181.175:35118 ended! Timecost: 0 ms
+2022/02/01 20:49:56 Get accept from 43.132.181.175:35278
+2022/02/01 20:49:56 Receive login request.Username: YoitsuHolo
+2022/02/01 20:49:56 Password correct: YoitsuHolo
+2022/02/01 20:49:56 Password correst,return cookie [29 73 212 149 92 132 134 33 99 37 37 63 236 115 141 215 169 226 139 249] to  43.132.181.175:35278
+2022/02/01 20:50:02 Get accept from 43.132.181.175:35290
+2022/02/01 20:50:02 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:50:02 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:50:02 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:50:06 Get accept from 43.132.181.175:35300
+2022/02/01 20:50:07 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:50:07 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:50:07 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:50:07 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:50:07 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:50:07 Return ip list to 43.132.181.175:35300 ended! Timecost: 0 ms
+2022/02/01 20:50:49 Get accept from 43.132.181.175:35352
+2022/02/01 20:50:49 Receive login request.Username: YoitsuHolo
+2022/02/01 20:50:49 Password correct: YoitsuHolo
+2022/02/01 20:50:49 Password correst,return cookie [33 17 156 22 15 7 2 68 134 21 187 218 8 49 63 106 142 182 104 210] to  43.132.181.175:35352
+2022/02/01 20:50:57 Get accept from 43.132.181.175:35362
+2022/02/01 20:50:57 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:50:57 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:50:57 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:51:02 Get accept from 43.132.181.175:35370
+2022/02/01 20:51:02 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:51:02 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:51:02 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:51:02 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:51:02 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:51:02 Return ip list to 43.132.181.175:35370 ended! Timecost: 1 ms
+2022/02/01 20:51:29 Get accept from 43.154.178.243:35758
+2022/02/01 20:51:29 Receive write request.Username: debug Path: /GFS.pdf
+2022/02/01 20:51:29 Write Filepath: /usr/local/PDFS/namespace/debug//GFS.pdf
+2022/02/01 20:51:29 File created,abs filepath: /usr/local/PDFS/namespace/debug/GFS.pdf blockname: 7cc10109e924ed0ac49a89be01c9582e597eda2b625ff10b144c8ea28e1a876a filename: GFS.pdf
+2022/02/01 20:51:29 Return Server list: [43.154.178.243:11111]
+2022/02/01 20:51:29 Receive file GFS.pdf from 43.154.178.243:35758 ended!
+2022/02/01 20:51:29 Write 7cc10109e924ed0ac49a89be01c9582e597eda2b625ff10b144c8ea28e1a876a-0 to server 43.154.178.243:11111
+2022/02/01 20:51:29 Write 7cc10109e924ed0ac49a89be01c9582e597eda2b625ff10b144c8ea28e1a876a-0 to server 43.154.178.243:11111 success.
+2022/02/01 20:51:29 Send file GFS.pdf to 43.154.178.243:35758 ended! Timecost: 26 ms
+2022/02/01 20:51:58 Get accept from 43.132.181.175:35430
+2022/02/01 20:51:59 Receive login request.Username: YoitsuHolo
+2022/02/01 20:51:59 Password correct: YoitsuHolo
+2022/02/01 20:51:59 Password correst,return cookie [11 245 5 152 117 146 30 102 138 91 223 44 127 196 132 69 146 210 87 43] to  43.132.181.175:35430
+2022/02/01 20:52:03 Get accept from 43.132.181.175:35442
+2022/02/01 20:52:04 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:52:04 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:52:04 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:52:08 Get accept from 43.132.181.175:35448
+2022/02/01 20:52:11 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:52:11 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:52:11 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:52:11 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:52:11 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:52:11 Return ip list to 43.132.181.175:35448 ended! Timecost: 1 ms
+2022/02/01 20:55:34 Get accept from 43.132.181.175:35680
+2022/02/01 20:55:34 Receive login request.Username: YoitsuHolo
+2022/02/01 20:55:34 Password correct: YoitsuHolo
+2022/02/01 20:55:34 Password correst,return cookie [205 6 104 210 214 197 47 80 84 226 208 131 107 248 76 113 116 203 116 118] to  43.132.181.175:35680
+2022/02/01 20:55:37 Get accept from 43.132.181.175:35684
+2022/02/01 20:55:38 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:55:38 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:55:38 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:55:41 Get accept from 43.132.181.175:35690
+2022/02/01 20:55:42 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:55:42 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:55:42 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:55:42 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:55:42 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:55:42 Return ip list to 43.132.181.175:35690 ended! Timecost: 1 ms
+2022/02/01 20:56:23 Get accept from 43.132.181.175:35744
+2022/02/01 20:56:24 Receive login request.Username: YoitsuHolo
+2022/02/01 20:56:24 Password correct: YoitsuHolo
+2022/02/01 20:56:24 Password correst,return cookie [54 76 195 219 217 104 176 247 23 46 216 87 148 187 53 139 12 59 82 93] to  43.132.181.175:35744
+2022/02/01 20:56:31 Get accept from 43.132.181.175:35754
+2022/02/01 20:56:32 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:56:32 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:56:32 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:56:37 Get accept from 43.154.178.243:36098
+2022/02/01 20:56:37 Receive add diretory request.Username: debug Path: dir
+2022/02/01 20:56:37 Add dirpath: /usr/local/PDFS/namespace/debug/dir
+2022/02/01 20:56:37 Add directory /usr/local/PDFS/namespace/debug/dir successfully.
+2022/02/01 20:56:46 Get accept from 43.132.181.175:35774
+2022/02/01 20:56:47 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:56:47 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:56:47 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:56:47 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:56:47 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:56:47 Return ip list to 43.132.181.175:35774 ended! Timecost: 0 ms
+2022/02/01 20:56:51 Get accept from 43.154.178.243:36116
+2022/02/01 20:56:51 Receive write request.Username: debug Path: /dir/GFS.pdf
+2022/02/01 20:56:51 Write Filepath: /usr/local/PDFS/namespace/debug//dir/GFS.pdf
+2022/02/01 20:56:51 File created,abs filepath: /usr/local/PDFS/namespace/debug/dir/GFS.pdf blockname: eb0d452babdd46523e04b8722fd7731215becdcc368eff447216c990d3f2fc47 filename: GFS.pdf
+2022/02/01 20:56:51 Return Server list: [43.154.178.243:11111]
+2022/02/01 20:56:51 Receive file GFS.pdf from 43.154.178.243:36116 ended!
+2022/02/01 20:56:51 Write eb0d452babdd46523e04b8722fd7731215becdcc368eff447216c990d3f2fc47-0 to server 43.154.178.243:11111
+2022/02/01 20:56:51 Write eb0d452babdd46523e04b8722fd7731215becdcc368eff447216c990d3f2fc47-0 to server 43.154.178.243:11111 success.
+2022/02/01 20:56:51 Send file GFS.pdf to 43.154.178.243:36116 ended! Timecost: 28 ms
+2022/02/01 20:57:14 Get accept from 43.132.181.175:35816
+2022/02/01 20:57:15 Receive login request.Username: YoitsuHolo
+2022/02/01 20:57:15 Password correct: YoitsuHolo
+2022/02/01 20:57:15 Password correst,return cookie [161 120 111 159 255 9 66 121 219 25 68 235 215 161 157 15 123 186 203 224] to  43.132.181.175:35816
+2022/02/01 20:57:18 Get accept from 43.132.181.175:35820
+2022/02/01 20:57:19 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:57:19 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:57:19 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:57:29 Get accept from 43.132.181.175:35834
+2022/02/01 20:57:29 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:57:29 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:57:29 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:57:29 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:57:29 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:57:29 Return ip list to 43.132.181.175:35834 ended! Timecost: 0 ms
+2022/02/01 20:58:45 Get accept from 43.132.181.175:35918
+2022/02/01 20:58:46 Receive login request.Username: YoitsuHolo
+2022/02/01 20:58:46 Password correct: YoitsuHolo
+2022/02/01 20:58:46 Password correst,return cookie [37 90 165 183 212 75 236 64 248 76 137 43 155 255 212 54 41 176 34 59] to  43.132.181.175:35918
+2022/02/01 20:58:50 Get accept from 43.132.181.175:35924
+2022/02/01 20:58:50 Receive ask files request.Username: YoitsuHolo Path: /
+2022/02/01 20:58:50 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/
+2022/02/01 20:58:50 Get files in abspath: /usr/local/PDFS/namespace/YoitsuHolo/ success.
+2022/02/01 20:58:55 Get accept from 43.132.181.175:35934
+2022/02/01 20:58:55 Receive read request.Username: YoitsuHolo Path: /Test.txt
+2022/02/01 20:58:55 Read Filepath: /usr/local/PDFS/namespace/YoitsuHolo//Test.txt
+2022/02/01 20:58:55 Read request filename: Test.txt blockname: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb FilePath: /usr/local/PDFS/namespace/YoitsuHolo/Test.txt
+2022/02/01 20:58:55 a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb have 1 nums.
+2022/02/01 20:58:55 Return ip list: [43.154.178.243:11111]
+2022/02/01 20:58:55 Return ip list to 43.132.181.175:35934 ended! Timecost: 0 ms

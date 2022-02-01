@@ -1,6 +1,7 @@
 package api
 
 import (
+	"PDFS-Server/DB"
 	"PDFS-Server/common"
 	"log"
 	"net"
@@ -39,8 +40,10 @@ func RevFile(fileName string, conn net.Conn) {
 			}
 			log.Printf("Receive file %s from %s ended!The file have %.3f mb， Timecost: %d ms,speed average %.3f mb/s.",
 				fileName, conn.RemoteAddr().String(), float64(info.Size())/1024/1024, end-begin, float64(info.Size())*1000/1024/1024/float64(end-begin))
+			DB.UpdateBlockInfo(fileName, common.GetServerAddr(), time.Now().Unix())
 			return
 		}
 		_, _ = file.Write(buf[:n])
 	}
+
 }

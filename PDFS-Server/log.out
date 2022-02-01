@@ -1,11 +1,42 @@
-2022/02/01 15:03:04 Loading config.
-2022/02/01 15:03:04 Listen addr: 10.0.4.12:11111
-2022/02/01 15:03:04 Server addr: 43.154.178.243:11111
-2022/02/01 15:03:04 Handler addr: 43.154.178.243:9999
-2022/02/01 15:03:04 Redis addr: 127.0.0.1:6379
-2022/02/01 15:03:04 Blocks path: /usr/local/PDFS/blocks
-2022/02/01 15:03:04 Blocks directory founded.
-2022/02/01 15:03:04 Connecting to redis: 127.0.0.1:6379
-2022/02/01 15:03:04 Connect to redis success.
-2022/02/01 15:03:04 Server init success.
-2022/02/01 15:03:04 Server start serving,listening to: 10.0.4.12:11111
+2022/02/01 20:22:15 Loading config.
+2022/02/01 20:22:15 Listen addr: 10.0.4.12:11111
+2022/02/01 20:22:15 Server addr: 43.154.178.243:11111
+2022/02/01 20:22:15 Handler addr: 43.154.178.243:9999
+2022/02/01 20:22:15 Redis addr: 127.0.0.1:6379
+2022/02/01 20:22:15 Blocks path: /usr/local/PDFS/blocks
+2022/02/01 20:22:15 Blocks directory founded.
+2022/02/01 20:22:15 Connecting to redis: 127.0.0.1:6379
+2022/02/01 20:22:15 Connect to redis success.
+2022/02/01 20:22:15 Server init success.
+2022/02/01 20:22:15 Server start serving,listening to: 10.0.4.12:11111
+2022/02/01 20:33:05 Get accept from 43.154.178.243:34320
+2022/02/01 20:33:05 Receive write request from: 43.154.178.243:34320 filename: a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb-0 reply ok.
+2022/02/01 20:33:05 Receive file a3b186cace1fca7cca48bbdb4b25eff956058984a66481f41c1ca4ec6d749ceb-0 from 43.154.178.243:34320 ended!The file have 0.002 mb， Timecost: 1 ms,speed average 1.835 mb/s.
+2022/02/01 20:38:39 Get accept from 43.132.181.175:16386
+2022/02/01 20:38:39 Operation not exist,reply err to 43.132.181.175:16386
+2022/02/01 20:42:02 Get accept from 43.132.181.175:16614
+2022/02/01 20:42:02 Operation not exist,reply err to 43.132.181.175:16614
+2022/02/01 20:46:14 Get accept from 43.132.181.175:16900
+2022/02/01 20:46:14 Operation not exist,reply err to 43.132.181.175:16900
+2022/02/01 20:47:47 Get accept from 43.132.181.175:17012
+2022/02/01 20:47:47 Operation not exist,reply err to 43.132.181.175:17012
+2022/02/01 20:50:07 Get accept from 43.132.181.175:17188
+2022/02/01 20:50:07 Operation not exist,reply err to 43.132.181.175:17188
+2022/02/01 20:51:03 Get accept from 43.132.181.175:17262
+2022/02/01 20:51:03 Operation not exist,reply err to 43.132.181.175:17262
+2022/02/01 20:51:29 Get accept from 43.154.178.243:35558
+2022/02/01 20:51:29 Receive write request from: 43.154.178.243:35558 filename: 7cc10109e924ed0ac49a89be01c9582e597eda2b625ff10b144c8ea28e1a876a-0 reply ok.
+2022/02/01 20:51:29 Receive file 7cc10109e924ed0ac49a89be01c9582e597eda2b625ff10b144c8ea28e1a876a-0 from 43.154.178.243:35558 ended!The file have 0.300 mb， Timecost: 13 ms,speed average 23.071 mb/s.
+2022/02/01 20:52:11 Get accept from 43.132.181.175:17340
+2022/02/01 20:52:11 Operation not exist,reply err to 43.132.181.175:17340
+2022/02/01 20:55:43 Get accept from 43.132.181.175:17584
+2022/02/01 20:55:43 Operation not exist,reply err to 43.132.181.175:17584
+2022/02/01 20:56:47 Get accept from 43.132.181.175:17662
+2022/02/01 20:56:47 Operation not exist,reply err to 43.132.181.175:17662
+2022/02/01 20:56:51 Get accept from 43.154.178.243:35916
+2022/02/01 20:56:51 Receive write request from: 43.154.178.243:35916 filename: eb0d452babdd46523e04b8722fd7731215becdcc368eff447216c990d3f2fc47-0 reply ok.
+2022/02/01 20:56:51 Receive file eb0d452babdd46523e04b8722fd7731215becdcc368eff447216c990d3f2fc47-0 from 43.154.178.243:35916 ended!The file have 0.300 mb， Timecost: 13 ms,speed average 23.071 mb/s.
+2022/02/01 20:57:29 Get accept from 43.132.181.175:17722
+2022/02/01 20:57:29 Operation not exist,reply err to 43.132.181.175:17722
+2022/02/01 20:58:55 Get accept from 43.132.181.175:17822
+2022/02/01 20:58:55 Operation not exist,reply err to 43.132.181.175:17822

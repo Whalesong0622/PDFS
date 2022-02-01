@@ -1,6 +1,7 @@
 package cookies
 
 import (
+	"log"
 	"math/rand"
 	"time"
 )
@@ -34,8 +35,10 @@ func CookieToUsername(cookie []byte) string {
 	tmpinfo, ok := cookies_map[string(cookie)]
 
 	if !ok {
+		log.Println("Cookie check failed.")
 		return ""
-	} else if (time.Now().Unix()-tmpinfo.createdtime)/3600 >= 1 {
+	} else if time.Now().Unix()-tmpinfo.createdtime >= 3600 {
+		log.Println("Cookie check failed.Cookie overdue.")
 		delete(cookies_map, string(cookie))
 		return ""
 	}
@@ -53,7 +56,7 @@ func CookiesDaemon() {
 // 遍历cookies，对于超过一小时的cookie进行删除
 func CookiesMapCleaner() {
 	for key, val := range cookies_map {
-		if (time.Now().Unix()-val.createdtime)/3600 >= 1 {
+		if time.Now().Unix()-val.createdtime >= 3600 {
 			delete(cookies_map, key)
 		}
 	}

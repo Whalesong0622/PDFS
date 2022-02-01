@@ -13,6 +13,7 @@ import (
 
 var MySQLConfig *common.MySQLConfigStruct
 
+var createDatabaseSQL = "CREATE DATABASE IF NOT EXISTS ?;"
 var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
 func MySQLInit() {
@@ -21,6 +22,7 @@ func MySQLInit() {
 	if err != nil {
 		log.Println("Error occur when connecting to MySQL:", err)
 	}
+	_, _ = db.Exec(createDatabaseSQL, MySQLConfig.DBName)
 	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
 }
 
@@ -127,7 +129,7 @@ func ChangePasswd(username string, newpasswd string) byte {
 	db, err := MySQLConnect()
 	if err != nil {
 		fmt.Println(err)
-		return errorcode.UNKNOWN_ERR
+		return errorcode.CHANGE_PASSWD_FAILED
 	}
 	defer db.Close()
 
@@ -137,16 +139,16 @@ func ChangePasswd(username string, newpasswd string) byte {
 	row, err := db.Exec(SQL, args[0], args[1])
 	if err != nil {
 		log.Println("Error occur when changing user passwd:", username, err)
-		return errorcode.UNKNOWN_ERR
+		return errorcode.CHANGE_PASSWD_FAILED
 	}
 
 	rowsaffected, err := row.RowsAffected()
 	if err != nil || rowsaffected != 1 {
-		log.Println("Error occur when changing user passwd:", username, err)
-		return errorcode.UNKNOWN_ERR
+		log.Println("Error occur when changing user passwd,password is same as before.", username, err)
+		return errorcode.CHANGE_PASSWD_FAILED
 	}
 	log.Println("Change", username, "password successfully.")
-	return errorcode.OK
+	return errorcode.CHANGE_PASSWD_SUCCESS
 }
 
 func IsUserExist(username string) bool {

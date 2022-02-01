@@ -44,7 +44,7 @@ func HeartBeat(blockPath string, conn redis.Conn) {
 	for _, fi := range files {
 		if !fi.IsDir() {
 			// fmt.Println(fi.Name())
-			DB.UpdateBlockInfo(fi.Name(), ServerAddr, time.Now().Unix(), conn)
+			DB.UpdateBlockInfoHeartBeat(fi.Name(), ServerAddr, time.Now().Unix(), conn)
 		}
 	}
 }

@@ -40,14 +40,14 @@ func depackage(byteStream []byte, pg *Package) byte {
 			log.Println("Error when depackage,length of package not equal to 41.")
 			return errorcode.UNKNOWN_ERR
 		}
-		pg.Cookie = GetPackagebytes(byteStream[1:21])
+		pg.Cookie = byteStream[1:21]
 		pg.passwd = GetPackageString(byteStream[21:41])
 		pg.username = cookies.CookieToUsername(pg.Cookie)
 		if pg.passwd == "" {
 			log.Println("Error when depackage,password nil.")
 			return errorcode.UNKNOWN_ERR
 		} else if pg.username == "" {
-			log.Println("Error when depackage,cookie not found.")
+			log.Println("Error when depackage,cookie not found.Cookie:", pg.Cookie)
 			return errorcode.COOKIES_NOT_FOUND
 		}
 
@@ -60,14 +60,14 @@ func depackage(byteStream []byte, pg *Package) byte {
 			log.Println("Error when depackage,length of package not equal to 41.")
 			return errorcode.UNKNOWN_ERR
 		}
-		pg.Cookie = GetPackagebytes(byteStream[1:21])
+		pg.Cookie = byteStream[1:21]
 		pg.passwd = GetPackageString(byteStream[21:41])
 		pg.username = cookies.CookieToUsername(pg.Cookie)
 		if pg.passwd == "" {
 			log.Println("Error when depackage,password or cookie nil.")
 			return errorcode.UNKNOWN_ERR
 		} else if pg.username == "" {
-			log.Println("Error when depackage,cookie not found.")
+			log.Println("Error when depackage,cookie not found.Cookie:", pg.Cookie)
 			return errorcode.COOKIES_NOT_FOUND
 		}
 
@@ -79,10 +79,10 @@ func depackage(byteStream []byte, pg *Package) byte {
 			log.Println("Error when depackage,length of package less then 21.")
 			return errorcode.UNKNOWN_ERR
 		}
-		pg.Cookie = GetPackagebytes(byteStream[1:21])
+		pg.Cookie = byteStream[1:21]
 		pg.username = cookies.CookieToUsername(pg.Cookie)
 		if pg.username == "" {
-			log.Println("Error when depackage,cookie not found.")
+			log.Println("Error when depackage,cookie not found.Cookie:", pg.Cookie)
 			return errorcode.COOKIES_NOT_FOUND
 		}
 		pg.path = GetPackageString(byteStream[21:])
@@ -101,10 +101,10 @@ func depackage(byteStream []byte, pg *Package) byte {
 			fmt.Println("Error when depackage,length of package less then 21.")
 			return errorcode.UNKNOWN_ERR
 		}
-		pg.Cookie = GetPackagebytes(byteStream[1:21])
+		pg.Cookie = byteStream[1:21]
 		pg.username = cookies.CookieToUsername(pg.Cookie)
 		if pg.username == "" {
-			log.Println("Error when depackage,cookie not found.")
+			log.Println("Error when depackage,cookie not found.Cookie:", pg.Cookie)
 			return errorcode.COOKIES_NOT_FOUND
 		}
 		pg.path = GetPackageString(byteStream[21:])
@@ -117,10 +117,10 @@ func depackage(byteStream []byte, pg *Package) byte {
 			fmt.Println("Error when depackage,length of package less then 21.")
 			return errorcode.UNKNOWN_ERR
 		}
-		pg.Cookie = GetPackagebytes(byteStream[1:21])
+		pg.Cookie = byteStream[1:21]
 		pg.username = cookies.CookieToUsername(pg.Cookie)
 		if pg.username == "" {
-			log.Println("Error when depackage,cookie not found.")
+			log.Println("Error when depackage,cookie not found.Cookie:", pg.Cookie)
 			return errorcode.COOKIES_NOT_FOUND
 		}
 		pg.path = GetPackageString(byteStream[22:])

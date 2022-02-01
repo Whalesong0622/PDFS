@@ -69,11 +69,16 @@ func GetInfoAndDelFiles(blockName string, outsidewc *sync.WaitGroup) {
 	// 将每个服务器存储的分块删除
 	for i := 0; i < blockNums; i++ {
 		blockNames := blockName + "-" + strconv.Itoa(i)
-		_, _ = DB.GetBlockIpList(blockNames)
-		// 将每个服务器上保存的块都删除掉
-		var ip string = "43.154.178.243:11111"
-		wc.Add(1)
-		go DelToServer(blockNames, ip, &wc)
+		ipList, err := DB.GetBlockIpList(blockNames)
+		if err != nil || len(ipList) == 0 {
+			log.Println()
+			return
+		}
+
+		for _, ip := range ipList {
+			wc.Add(1)
+			go DelToServer(blockNames, ip, &wc)
+		}
 	}
 	wc.Wait()
 }

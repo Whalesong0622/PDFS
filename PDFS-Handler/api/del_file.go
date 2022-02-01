@@ -47,16 +47,16 @@ func DelFile(username string, path string, conn net.Conn) {
 	begin := now.Local().UnixNano() / (1000 * 1000)
 	for i := 0; i < blockNums; i++ {
 		blockNames := blockName + "-" + strconv.Itoa(i)
-		// ipList, err := DB.GetBlockIpList(blockNames)
-		_, err := DB.GetBlockIpList(blockNames)
-		if err != nil {
-			_, _ = conn.Write(common.ByteToBytes(errorcode.UNKNOWN_ERR))
+		ipList, err := DB.GetBlockIpList(blockNames)
+		if err != nil || len(ipList) == 0 {
+			log.Println()
 			return
 		}
 
-		var ip string = "43.154.178.243:11111"
-		wc.Add(1)
-		go DelToServer(blockNames, ip, &wc)
+		for _, ip := range ipList {
+			wc.Add(1)
+			go DelToServer(blockNames, ip, &wc)
+		}
 	}
 	wc.Wait()
 	end := time.Now().Local().UnixNano() / (1000 * 1000)

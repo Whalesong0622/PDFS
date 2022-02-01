@@ -75,7 +75,7 @@ func Write(username string, path string, conn net.Conn) {
 	if len(byteStream) > 0 {
 		for _, ip := range ServerList {
 			wc.Add(1)
-			go WriteToServer(blockName+"-"+strconv.Itoa(cur), byteStream[:BlockSize], ip, &wc)
+			go WriteToServer(blockName+"-"+strconv.Itoa(cur), byteStream, ip, &wc)
 		}
 	}
 	wc.Wait()

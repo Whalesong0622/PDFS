@@ -74,7 +74,9 @@ func GetBlockIpList(blocknames string) ([]string, error) {
 			return nil, err
 		}
 		lastheartbeat, _ := strconv.ParseInt(reply, 10, 64)
-		if time.Now().Unix()-lastheartbeat > 30*60*60 {
+		// 若超过60秒没有更新，则认为服务器不可达。
+		// 服务器每10秒更新一次信息。
+		if time.Now().Unix()-lastheartbeat >= 60 {
 			_, _ = conn.Do("HDEL", blocknames, ip)
 		} else {
 			rtIpList = append(rtIpList, ip)
@@ -102,7 +104,9 @@ func GetServerList(num int) ([]string, error) {
 			return nil, err
 		}
 		lastheartbeat, _ := strconv.ParseInt(reply, 10, 64)
-		if time.Now().Unix()-lastheartbeat > 30*60*60 {
+		// 若超过60秒没有更新，则认为服务器不可达。
+		// 服务器每10秒更新一次信息。
+		if time.Now().Unix()-lastheartbeat >= 60 {
 			_, _ = conn.Do("HDEL", "ServerList", ip)
 		} else {
 			rtIpList = append(rtIpList, ip)
