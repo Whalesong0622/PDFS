@@ -13,21 +13,24 @@ import (
 
 var MySQLConfig *common.MySQLConfigStruct
 
-var createDatabaseSQL = "CREATE DATABASE IF NOT EXISTS ?;"
 var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
 func MySQLInit() {
 	MySQLConfig = common.GetMySQLStruct()
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		log.Println("Error occur when connecting to MySQL:", err)
 	}
-	_, _ = db.Exec(createDatabaseSQL, MySQLConfig.DBName)
+	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS " + MySQLConfig.DBName)
+	if err != nil {
+		log.Println("Error occur when create database", MySQLConfig.DBName, err)
+	}
+	_, _ = db.Exec("USE " + MySQLConfig.DBName)
 	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
 }
 
-func MySQLConnect() (*sql.DB, error) {
-	path := strings.Join([]string{MySQLConfig.Username, ":", MySQLConfig.Passwd, "@tcp(", MySQLConfig.Ip, ":", MySQLConfig.Port, ")/", MySQLConfig.DBName, "?charset=utf8"}, "")
+func MySQLConnect(DatabaseName string) (*sql.DB, error) {
+	path := strings.Join([]string{MySQLConfig.Username, ":", MySQLConfig.Passwd, "@tcp(", MySQLConfig.Ip, ":", MySQLConfig.Port, ")/", DatabaseName, "?charset=utf8"}, "")
 	DB, _ := sql.Open("mysql", path)
 	DB.SetConnMaxLifetime(100)
 	//设置上数据库最大闲置连接数
@@ -40,7 +43,7 @@ func MySQLConnect() (*sql.DB, error) {
 }
 
 func NewUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		log.Println("Error occur when connecting to MySQL err:", err)
 		return errorcode.UNKNOWN_ERR
@@ -65,7 +68,7 @@ func NewUserToDB(username string, passwd string) byte {
 }
 
 func DelUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		log.Println("Error occur when connecting To MySQL err:", err)
 		return errorcode.UNKNOWN_ERR
@@ -93,7 +96,7 @@ func DelUserToDB(username string, passwd string) byte {
 }
 
 func PasswdCheck(username string, passwd string) byte {
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		log.Println("Error occur when connecting To MySQL err:", err)
 		return errorcode.UNKNOWN_ERR
@@ -126,7 +129,7 @@ func PasswdCheck(username string, passwd string) byte {
 }
 
 func ChangePasswd(username string, newpasswd string) byte {
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		fmt.Println(err)
 		return errorcode.CHANGE_PASSWD_FAILED
@@ -152,7 +155,7 @@ func ChangePasswd(username string, newpasswd string) byte {
 }
 
 func IsUserExist(username string) bool {
-	db, err := MySQLConnect()
+	db, err := MySQLConnect("mysql")
 	if err != nil {
 		fmt.Println(err)
 		return false

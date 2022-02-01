@@ -24,6 +24,7 @@ func DelFile(username string, path string, conn net.Conn) {
 		_, _ = conn.Write(common.ByteToBytes(errorcode.DEL_FILE_NOT_EXIST))
 		return
 	}
+	defer os.Remove(Filepath)
 
 	// Filepath：/usr/local/PDFS/namespace/username/path/文件名
 	// blockName: sha256(filePath)
@@ -62,6 +63,7 @@ func DelFile(username string, path string, conn net.Conn) {
 	end := time.Now().Local().UnixNano() / (1000 * 1000)
 	log.Printf("Delete file to %s ended! Timecost: %d ms", conn.RemoteAddr().String(), end-begin)
 
+	os.Remove(Filepath)
 	_, _ = conn.Write(common.ByteToBytes(errorcode.DEL_FILE_SUCCESS))
 }
 
