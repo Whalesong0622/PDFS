@@ -56,7 +56,7 @@ PDFS由管理服务器PDFS-Handler和存储服务器PDFS-Server组成。
 ```bash
 {
 	// 以下的地址表示的是ip和端口，即ip:port
-    // handler的监听地址，用于云服务器等监听端口和外网端口不一致的情况
+        // handler的监听地址，用于云服务器等监听端口和外网端口不一致的情况
 	"listen_addr":	"127.0.0.1:9999",
 	// handler的访问地址
 	"handler_addr": "127.0.0.1:9999",
@@ -82,8 +82,8 @@ PDFS-Server的内容和含义如下
 	// server的监听地址，用于云服务器等监听端口和外网端口不一致的情况
 	"listen_addr":"127.0.0.1:11111",
 	// server的访问地址
-    "server_addr": "127.0.0.1:11111",
-    // handler的访问地址
+        "server_addr": "127.0.0.1:11111",
+        // handler的访问地址
 	"handler_addr": "127.0.0.1:9999",
 	// handler的redis访问地址
 	"handler_redis": "127.0.0.1:6379",
