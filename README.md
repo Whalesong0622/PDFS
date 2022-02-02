@@ -29,14 +29,14 @@
 
 PDFS是一个基于GFS思想的存储服务，通过将文件拆分成若干大小的块，并存放到不同存储服务器中，达到分布式存储的效果。
 
-PDFS由管理服务器PDFS-Handler和存储服务器PDFS-Server组成。
+一个PDFS集群由一个管理服务器PDFS-Handler和若干存储服务器PDFS-Server组成。PDFS集群可以进行动态存储服务器扩容，只需要将存储服务器的配置文件中的handler地址及redis地址指向同一管理服务器PDFS-Handler即可扩容。
 
 # 2.使用
 
 ## 2.1.环境
 
 - 操作系统：由于开发与测试都是在Linux上进行的，因此推荐Linux。不排除Windows会出现奇怪的问题。
-- 数据库：Mysql（建议5.7版本），Redis
+- 数据库：MySQL（建议5.7版本），Redis
 - Golang
 
 ## 2.2.下载项目
