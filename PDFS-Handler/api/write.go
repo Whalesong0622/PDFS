@@ -15,6 +15,7 @@ import (
 )
 
 const BlockSize int = 64000000 //64MB
+const readTimeout int = 60     // 一分钟超时
 
 func Write(username string, path string, conn net.Conn) {
 	Filepath := strings.Join([]string{common.GetNamespacePath(), username, path}, "/")
@@ -52,10 +53,14 @@ func Write(username string, path string, conn net.Conn) {
 	cur := 0 // 分块编号
 	wc := sync.WaitGroup{}
 
-	//记录文件字节大小
+	conn.SetReadDeadline(time.Now().Add(time.Second * time.Duration(readTimeout)))
 	var sum int
 	for {
-		n, _ := conn.Read(buf)
+		n, err := conn.Read(buf)
+		if err != nil {
+			log.Println("Error occur when read conn.", err)
+			return
+		}
 		sum += n
 		// log.Println(sum)
 		if n == 0 {
