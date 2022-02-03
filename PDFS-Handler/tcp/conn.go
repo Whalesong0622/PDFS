@@ -42,41 +42,44 @@ func HandleConn(conn net.Conn) {
 	if request.Op == NEW_USER_OP {
 		reply := api.NewUser(request.username, request.passwd)
 		_, _ = conn.Write(common.ByteToBytes(reply))
-		conn.Close()
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == DEL_USER_OP {
 		reply := api.DelUser(request.username, request.passwd, request.Cookie)
 		_, _ = conn.Write(common.ByteToBytes(reply))
-		conn.Close()
-		return
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == CHANGE_PASSWD_OP {
 		reply := DB.ChangePasswd(request.username, request.passwd)
 		_, _ = conn.Write(common.ByteToBytes(reply))
-		conn.Close()
-		return
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == LOGIN_OP {
 		api.Login(request.username, request.passwd, conn)
-		conn.Close()
-		return
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == WRITE_OP {
 		api.Write(request.username, request.path, conn)
 		conn.Close()
-		return
 	} else if request.Op == READ_OP {
 		api.Read(request.username, request.path, conn)
 		conn.Close()
 	} else if request.Op == DEL_OP {
 		api.DelFile(request.username, request.path, conn)
-		conn.Close()
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == ADD_DIR_OP {
 		api.AddDir(request.username, request.path, conn)
-		conn.Close()
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == DEL_DIR_OP {
 		api.DelDir(request.username, request.path, conn)
-		conn.Close()
-	} else if request.Op == SERVER_CONNECT_OP {
-
+		// conn.Close()
+		go HandleConn(conn)
 	} else if request.Op == ASK_FILES_OP {
 		api.GetFilesInPath(request.username, request.path, conn)
+		// conn.Close()
+		go HandleConn(conn)
 	} else {
 		log.Println("Reply err to", conn.RemoteAddr().String())
 		_, _ = conn.Write(common.ByteToBytes(errorcode.UNKNOWN_ERR))

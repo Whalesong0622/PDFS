@@ -10,18 +10,25 @@ import (
 )
 
 const BlockSize int = 64000000 //64MB
+var redisConn redis.Conn
 
-func RedisInit() redis.Conn {
+func RedisInit() error {
 	conn, err := redis.Dial("tcp", common.GetRedisAddr())
 	if err != nil {
-		log.Println("连接错误，err=", err)
-		return nil
+		log.Println("Connect to redis err", err)
+		return err
 	}
-	return conn
+	redisConn = conn
+	return nil
+}
+
+func GetRedisConn() redis.Conn {
+	return redisConn
 }
 
 // 存放在redis中块的信息为哈希，key为文件名，filed为服务器地址，val为unix时间戳
-func UpdateNamespaceInfo(fileName string, ip string, unixTime int64, conn redis.Conn) error {
+func UpdateNamespaceInfo(fileName string, ip string, unixTime int64) error {
+	conn := GetRedisConn()
 	_, err := conn.Do("HMSET", fileName, ip, unixTime)
 	if err != nil {
 		log.Println("set err=", err)
@@ -30,7 +37,7 @@ func UpdateNamespaceInfo(fileName string, ip string, unixTime int64, conn redis.
 }
 
 func UpdateFileInfo(blockname string, username string, size int, filename string) error {
-	conn := RedisInit()
+	conn := GetRedisConn()
 	_, err := conn.Do("HMSET", blockname, "lastmodify", time.Now().Unix(), "filename", filename, "username", username, "blocknums", (size+BlockSize-1)/BlockSize, "size", size)
 	if err != nil {
 		log.Println("Error occur when updateFileInfo:", err)
@@ -39,7 +46,7 @@ func UpdateFileInfo(blockname string, username string, size int, filename string
 }
 
 func DelFileInfo(blockname string) error {
-	conn := RedisInit()
+	conn := GetRedisConn()
 	_, err := conn.Do("del", blockname)
 	if err != nil {
 		log.Println("Error occur when updateFileInfo:", err)
@@ -48,7 +55,7 @@ func DelFileInfo(blockname string) error {
 }
 
 func GetFileBlockNums(blockname string) (int, error) {
-	conn := RedisInit()
+	conn := GetRedisConn()
 	reply, err := redis.String(conn.Do("HGET", blockname, "blocknums"))
 	if err != nil {
 		return 0, err
@@ -59,7 +66,7 @@ func GetFileBlockNums(blockname string) (int, error) {
 
 // 获取每个分块的iplist,并将过期的地址删除
 func GetBlockIpList(blocknames string) ([]string, error) {
-	conn := RedisInit()
+	conn := GetRedisConn()
 	IpList, err := redis.Strings(conn.Do("HKEYS", blocknames))
 
 	if err != nil {
@@ -86,10 +93,17 @@ func GetBlockIpList(blocknames string) ([]string, error) {
 	return rtIpList, nil
 }
 
+// 删除Key
+func DelKey(Key string) error {
+	conn := GetRedisConn()
+	_, err := redis.Strings(conn.Do("DEL", Key))
+	return err
+}
+
 // 获取存储服务器列表,并将过期的地址删除
 // num表示希望返回多少个地址。如果为则返回所有
 func GetServerList(num int) ([]string, error) {
-	conn := RedisInit()
+	conn := GetRedisConn()
 	IpList, err := redis.Strings(conn.Do("HKEYS", "ServerList"))
 
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"fmt"
-	"github.com/gomodule/redigo/redis"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -13,18 +12,18 @@ import (
 var namespacePath string
 var ServerAddr string
 
-func HeartBeatDeamon(conn redis.Conn) {
+func HeartBeatDeamon() {
 	namespacePath = common.GetNamespacePath()
 	ServerAddr = common.GetServerAddr()
 	for {
 		// log.Println("Heartbeating")
-		HeartBeat(namespacePath, conn)
+		HeartBeat(namespacePath)
 		// 每十秒更新一次
 		time.Sleep(time.Second * 10)
 	}
 }
 
-func HeartBeat(namespacePath string, conn redis.Conn) {
+func HeartBeat(namespacePath string) {
 	files, err := ioutil.ReadDir(namespacePath)
 	if err != nil {
 		fmt.Println("Error occur when reading blocks path:", err)
@@ -40,9 +39,9 @@ func HeartBeat(namespacePath string, conn redis.Conn) {
 	for _, fi := range files {
 		if !fi.IsDir() {
 			// fmt.Println(fi.Name())
-			_ = DB.UpdateNamespaceInfo(fi.Name(), ServerAddr, time.Now().Unix(), conn)
+			_ = DB.UpdateNamespaceInfo(fi.Name(), ServerAddr, time.Now().Unix())
 		} else {
-			HeartBeat(strings.Join([]string{namespacePath, fi.Name()}, "/"), conn)
+			HeartBeat(strings.Join([]string{namespacePath, fi.Name()}, "/"))
 		}
 	}
 }

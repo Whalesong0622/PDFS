@@ -12,6 +12,7 @@ import (
 )
 
 var MySQLConfig *common.MySQLConfigStruct
+var MySQLDB *sql.DB
 
 var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
@@ -27,6 +28,11 @@ func MySQLInit() {
 	}
 	_, _ = db.Exec("USE " + MySQLConfig.DBName)
 	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
+	MySQLDB = db
+}
+
+func GetMySQLDB() *sql.DB {
+	return MySQLDB
 }
 
 func MySQLConnect(DatabaseName string) (*sql.DB, error) {
@@ -43,12 +49,7 @@ func MySQLConnect(DatabaseName string) (*sql.DB, error) {
 }
 
 func NewUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting to MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	if IsUserExist(username) {
 		log.Println("Error occur when creating new user,user already exist.")
@@ -56,8 +57,8 @@ func NewUserToDB(username string, passwd string) byte {
 	}
 
 	//执行SQL语句
-	SQL := "insert into PDFS_USER_TABLE(username,passwd)values (?,?)"
-	_, err = db.Exec(SQL, username, common.ToSha(passwd))
+	SQL := "insert into ?(username,passwd)values (?,?)"
+	_, err := db.Exec(SQL, MySQLConfig.TableName, username, common.ToSha(passwd))
 	if err != nil {
 		log.Println("Error occur when executive new user:", err)
 		return errorcode.UNKNOWN_ERR
@@ -68,12 +69,7 @@ func NewUserToDB(username string, passwd string) byte {
 }
 
 func DelUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	if !IsUserExist(username) {
 		log.Println("Error occur when deleting user,", username, "not exist.")
@@ -84,8 +80,8 @@ func DelUserToDB(username string, passwd string) byte {
 	if check != errorcode.OK {
 		return check
 	}
-	SQL := "delete from PDFS_USER_TABLE where username = ?"
-	_, err = db.Exec(SQL, username)
+	SQL := "delete from ? where username = ?"
+	_, err := db.Exec(SQL, MySQLConfig.TableName, username)
 	if err != nil {
 		log.Println("Error occur when deleting user", username, ":", err)
 		return errorcode.UNKNOWN_ERR
@@ -96,25 +92,20 @@ func DelUserToDB(username string, passwd string) byte {
 }
 
 func PasswdCheck(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	exist := IsUserExist(username)
 	if !exist {
 		fmt.Println("Check user passwd failed,user", username, "not exist.")
 		return errorcode.USER_NOT_EXIST
 	}
-	SQL := "select * from PDFS_USER_TABLE where username = ?"
-	args := []string{username}
+	SQL := "select * from ? where username = ?"
+	args := []string{MySQLConfig.TableName, username}
 
 	rows := db.QueryRow(SQL, args[0])
 	var name string
 	var tb_passwd string
-	err = rows.Scan(&name, &tb_passwd)
+	err := rows.Scan(&name, &tb_passwd)
 
 	if err != nil {
 		return errorcode.UNKNOWN_ERR
@@ -129,15 +120,10 @@ func PasswdCheck(username string, passwd string) byte {
 }
 
 func ChangePasswd(username string, newpasswd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		fmt.Println(err)
-		return errorcode.CHANGE_PASSWD_FAILED
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
-	SQL := "update PDFS_USER_TABLE set passwd = ? where username = ?"
-	args := []string{common.ToSha(newpasswd), username}
+	SQL := "update ? set passwd = ? where username = ?"
+	args := []string{MySQLConfig.TableName, common.ToSha(newpasswd), username}
 
 	row, err := db.Exec(SQL, args[0], args[1])
 	if err != nil {
@@ -155,19 +141,13 @@ func ChangePasswd(username string, newpasswd string) byte {
 }
 
 func IsUserExist(username string) bool {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	defer db.Close()
-	rows := db.QueryRow("select * from PDFS_USER_TABLE where username = ?", username)
-	if err != nil {
-		return false
-	}
+	db := GetMySQLDB()
+
+	rows := db.QueryRow("select * from ? where username = ?", MySQLConfig.TableName, username)
+
 	var name string
 	var tb_passwd string
-	err = rows.Scan(&name, &tb_passwd)
+	err := rows.Scan(&name, &tb_passwd)
 	if name == "" || err != nil {
 		return false
 	} else {
