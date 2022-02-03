@@ -6,28 +6,23 @@ import (
 	"PDFS-Handler/cookies"
 	"PDFS-Handler/errorcode"
 	"log"
-	"os"
-	"sync"
+	"net"
 )
 
-func DelUser(username string, passwd string, cookie []byte) byte {
+func DelUser(username string, passwd string, cookie []byte, conn net.Conn) {
 	reply := DB.DelUserToDB(username, passwd)
 	if reply != errorcode.OK {
 		log.Println("DB not found user:", username)
-		return reply
+		conn.Write(common.ByteToBytes(errorcode.USER_NOT_EXIST))
+		return
 	}
 
 	namespacePath := common.GetNamespacePath() + "/" + username
 	if common.IsDir(namespacePath) {
-		wc := sync.WaitGroup{}
-		go SearchAndDelete(namespacePath, &wc)
-		err := os.RemoveAll(namespacePath)
-		log.Println("os.remove", namespacePath, "err:", err)
 		cookies.DelectCookie(cookie)
-		wc.Wait()
-		return errorcode.OK
+		DelDir(username, "/", conn)
 	} else {
 		log.Println(namespacePath, "not exist")
-		return errorcode.USER_NOT_EXIST
+		conn.Write(common.ByteToBytes(errorcode.USER_NOT_EXIST))
 	}
 }

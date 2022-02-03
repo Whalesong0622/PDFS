@@ -45,8 +45,7 @@ func HandleConn(conn net.Conn) {
 		// conn.Close()
 		go HandleConn(conn)
 	} else if request.Op == DEL_USER_OP {
-		reply := api.DelUser(request.username, request.passwd, request.Cookie)
-		_, _ = conn.Write(common.ByteToBytes(reply))
+		api.DelUser(request.username, request.passwd, request.Cookie, conn)
 		// conn.Close()
 		go HandleConn(conn)
 	} else if request.Op == CHANGE_PASSWD_OP {

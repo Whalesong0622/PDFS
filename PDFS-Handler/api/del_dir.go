@@ -4,7 +4,6 @@ import (
 	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"PDFS-Handler/errorcode"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
@@ -25,17 +24,16 @@ func DelDir(username string, path string, conn net.Conn) {
 		return
 	}
 
-	wc := sync.WaitGroup{}
-	SearchAndDelete(dirpath, &wc)
-	wc.Wait()
+	SearchAndDelete(dirpath)
 	os.RemoveAll(dirpath)
 	log.Printf("Del directory successfully.")
+	conn.Write(common.ByteToBytes(errorcode.DEL_PATH_SUCCESS))
 }
 
-func SearchAndDelete(path string, wc *sync.WaitGroup) {
+func SearchAndDelete(path string) {
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		fmt.Println("Error occur when reading path:", err)
+		log.Println("Error occur when reading path:", err)
 		return
 	}
 
@@ -49,17 +47,15 @@ func SearchAndDelete(path string, wc *sync.WaitGroup) {
 		absPath, _ := filepath.Abs(path + "/" + fi.Name())
 		if common.IsFile(absPath) {
 			blockName := common.ToSha(absPath)
-			wc.Add(1)
-			go GetInfoAndDelFiles(blockName, wc)
+			go GetInfoAndDelFiles(blockName)
 		} else {
-			go SearchAndDelete(absPath, wc)
+			go SearchAndDelete(absPath)
 		}
 	}
 }
 
-func GetInfoAndDelFiles(blockName string, outsidewc *sync.WaitGroup) {
+func GetInfoAndDelFiles(blockName string) {
 	wc := sync.WaitGroup{}
-	defer outsidewc.Add(-1)
 	// 从redis中获取文件块数量，并将key删除
 	blockNums, err := DB.GetFileBlockNums(blockName)
 	if err != nil {
@@ -71,7 +67,7 @@ func GetInfoAndDelFiles(blockName string, outsidewc *sync.WaitGroup) {
 		blockNames := blockName + "-" + strconv.Itoa(i)
 		ipList, err := DB.GetBlockIpList(blockNames)
 		if err != nil || len(ipList) == 0 {
-			log.Println()
+			log.Println("Not found server hold this block", blockNames)
 			return
 		}
 

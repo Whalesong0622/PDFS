@@ -58,6 +58,7 @@ func Write(username string, path string, conn net.Conn) {
 	var sum int
 	for {
 		n, err := conn.Read(buf)
+		sum += n
 		if n == 0 || err == io.EOF {
 			log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
 			break

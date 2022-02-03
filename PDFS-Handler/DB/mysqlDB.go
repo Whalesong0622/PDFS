@@ -89,7 +89,7 @@ func DelUserToDB(username string, passwd string) byte {
 		log.Println("Error occur when deleting user", username, ":", err)
 		return errorcode.UNKNOWN_ERR
 	}
-	log.Println("Delete user", username, "successfully.")
+	log.Println("Delete user", username, "from mysql successfully.")
 	return errorcode.OK
 
 }
