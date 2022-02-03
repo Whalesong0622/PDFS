@@ -6,27 +6,25 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
-
-	"github.com/gomodule/redigo/redis"
 )
 
 var blockPath string
 var ServerAddr string
 
-func HeartBeatTimer(conn redis.Conn) {
+func HeartBeatTimer() {
 	blockPath = common.GetBlocksPath()
 	ServerAddr = common.GetServerAddr()
 	for {
 		// log.Println("Heartbeating")
-		HeartBeat(blockPath, conn)
+		HeartBeat(blockPath)
 		// 每十秒更新一次
 		time.Sleep(time.Second * 10)
 	}
 }
 
-func HeartBeat(blockPath string, conn redis.Conn) {
+func HeartBeat(blockPath string) {
 	// 注册自己的信息到Redis中
-	DB.ServerHeartbeat(ServerAddr, time.Now().Unix(), conn)
+	DB.ServerHeartbeat(ServerAddr, time.Now().Unix())
 
 	// 遍历文件块并更新到Redis中
 	files, err := ioutil.ReadDir(blockPath)
@@ -44,7 +42,7 @@ func HeartBeat(blockPath string, conn redis.Conn) {
 	for _, fi := range files {
 		if !fi.IsDir() {
 			// fmt.Println(fi.Name())
-			DB.UpdateBlockInfoHeartBeat(fi.Name(), ServerAddr, time.Now().Unix(), conn)
+			DB.UpdateBlockInfoHeartBeat(fi.Name(), ServerAddr, time.Now().Unix())
 		}
 	}
 }
