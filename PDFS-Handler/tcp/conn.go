@@ -7,7 +7,6 @@ import (
 	"PDFS-Handler/errorcode"
 	"log"
 	"net"
-	"time"
 )
 
 type Package struct {
@@ -19,8 +18,6 @@ type Package struct {
 }
 
 func HandleConn(conn net.Conn) {
-	// 每个请求十分钟超时，重新进入函数刷新。
-	conn.SetDeadline(time.Now().Add(60 * 10))
 	buf := make([]byte, 1024)
 	byteStream := make([]byte, 0)
 	n, err := conn.Read(buf)

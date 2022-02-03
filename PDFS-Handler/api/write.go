@@ -4,6 +4,7 @@ import (
 	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"PDFS-Handler/errorcode"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -57,15 +58,13 @@ func Write(username string, path string, conn net.Conn) {
 	var sum int
 	for {
 		n, err := conn.Read(buf)
+		if n == 0 || err == io.EOF {
+			log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
+			break
+		}
 		if err != nil {
 			log.Println("Error occur when read conn.", err)
 			return
-		}
-		sum += n
-		// log.Println(sum)
-		if n == 0 {
-			log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
-			break
 		}
 		byteStream = append(byteStream, buf[:n]...)
 		if len(byteStream) >= BlockSize {

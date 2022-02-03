@@ -11,8 +11,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var MySQLConfig *common.MySQLConfigStruct
 var MySQLDB *sql.DB
+var MySQLConfig *common.MySQLConfigStruct
 
 var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
@@ -26,7 +26,10 @@ func MySQLInit() {
 	if err != nil {
 		log.Println("Error occur when create database", MySQLConfig.DBName, err)
 	}
-	_, _ = db.Exec("USE " + MySQLConfig.DBName)
+	db, err = MySQLConnect(MySQLConfig.DBName)
+	if err != nil {
+		log.Println("Error occur when connecting to MySQL:", err)
+	}
 	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
 	MySQLDB = db
 }
@@ -57,8 +60,8 @@ func NewUserToDB(username string, passwd string) byte {
 	}
 
 	//执行SQL语句
-	SQL := "insert into ?(username,passwd)values (?,?)"
-	_, err := db.Exec(SQL, MySQLConfig.TableName, username, common.ToSha(passwd))
+	SQL := "insert into PDFS_USER_TABLE(username,passwd)values (?,?)"
+	_, err := db.Exec(SQL, username, common.ToSha(passwd))
 	if err != nil {
 		log.Println("Error occur when executive new user:", err)
 		return errorcode.UNKNOWN_ERR
@@ -80,8 +83,8 @@ func DelUserToDB(username string, passwd string) byte {
 	if check != errorcode.OK {
 		return check
 	}
-	SQL := "delete from ? where username = ?"
-	_, err := db.Exec(SQL, MySQLConfig.TableName, username)
+	SQL := "delete from PDFS_USER_TABLE where username = ?"
+	_, err := db.Exec(SQL, username)
 	if err != nil {
 		log.Println("Error occur when deleting user", username, ":", err)
 		return errorcode.UNKNOWN_ERR
@@ -99,8 +102,8 @@ func PasswdCheck(username string, passwd string) byte {
 		fmt.Println("Check user passwd failed,user", username, "not exist.")
 		return errorcode.USER_NOT_EXIST
 	}
-	SQL := "select * from ? where username = ?"
-	args := []string{MySQLConfig.TableName, username}
+	SQL := "select * from PDFS_USER_TABLE where username = ?"
+	args := []string{username}
 
 	rows := db.QueryRow(SQL, args[0])
 	var name string
@@ -122,8 +125,8 @@ func PasswdCheck(username string, passwd string) byte {
 func ChangePasswd(username string, newpasswd string) byte {
 	db := GetMySQLDB()
 
-	SQL := "update ? set passwd = ? where username = ?"
-	args := []string{MySQLConfig.TableName, common.ToSha(newpasswd), username}
+	SQL := "update PDFS_USER_TABLE set passwd = ? where username = ?"
+	args := []string{common.ToSha(newpasswd), username}
 
 	row, err := db.Exec(SQL, args[0], args[1])
 	if err != nil {
@@ -142,8 +145,7 @@ func ChangePasswd(username string, newpasswd string) byte {
 
 func IsUserExist(username string) bool {
 	db := GetMySQLDB()
-
-	rows := db.QueryRow("select * from ? where username = ?", MySQLConfig.TableName, username)
+	rows := db.QueryRow("select * from PDFS_USER_TABLE where username = ?", username)
 
 	var name string
 	var tb_passwd string
