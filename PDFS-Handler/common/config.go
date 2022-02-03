@@ -66,7 +66,6 @@ func GetConfig(config []byte) {
 	}
 	log.Println("Handler addr:", AddrConfig.HandlerAddr)
 	log.Println("Listen addr:", AddrConfig.HandlerAddr)
-	log.Println("Server addr:", AddrConfig.ServerAddr)
 	log.Println("Redis addr:", AddrConfig.RedisAddr)
 	log.Println("Namespace path:", PathConfig.NamespacePath)
 }
