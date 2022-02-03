@@ -7,6 +7,7 @@ import (
 	"PDFS-Handler/errorcode"
 	"log"
 	"os"
+	"sync"
 )
 
 func DelUser(username string, passwd string, cookie []byte) byte {
@@ -18,10 +19,12 @@ func DelUser(username string, passwd string, cookie []byte) byte {
 
 	namespacePath := common.GetNamespacePath() + "/" + username
 	if common.IsDir(namespacePath) {
-		// DELDIR(namespacePath)递归命名空间并删除所有文件，还没有实现，后面补
+		wc := sync.WaitGroup{}
+		go SearchAndDelete(namespacePath, &wc)
 		err := os.RemoveAll(namespacePath)
 		log.Println("os.remove", namespacePath, "err:", err)
 		cookies.DelectCookie(cookie)
+		wc.Wait()
 		return errorcode.OK
 	} else {
 		log.Println(namespacePath, "not exist")
