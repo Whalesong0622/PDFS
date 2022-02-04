@@ -14,8 +14,6 @@ import (
 var MySQLDB *sql.DB
 var MySQLConfig *common.MySQLConfigStruct
 
-var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-
 func MySQLInit() {
 	MySQLConfig = common.GetMySQLStruct()
 	db, err := MySQLConnect("mysql")
@@ -30,8 +28,12 @@ func MySQLInit() {
 	if err != nil {
 		log.Println("Error occur when connecting to MySQL:", err)
 	}
-	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
-	MySQLDB = db
+	CreateTableSQL := "CREATE TABLE if not exists "+MySQLConfig.TableName + " (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        _, err = db.Exec(CreateTableSQL)
+        if err != nil {
+                log.Println("Error occur when create table",MySQLConfig.TableName,err)
+        }
+        MySQLDB = db
 }
 
 func GetMySQLDB() *sql.DB {
