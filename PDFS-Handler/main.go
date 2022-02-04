@@ -86,14 +86,14 @@ func Init() bool {
 	// 初始化MySQL
 	DB.MySQLInit()
 	// 初始化Redis
-	redisConn := DB.RedisInit()
-	if redisConn == nil {
+	err = DB.RedisInit()
+	if err != nil {
 		log.Println("Redis connect failed.Please check if redis reliable.")
 		return false
 	}
 
 	// 定期扫描文件目录，更新Redis信息
-	go heartbeat.HeartBeatDeamon(redisConn)
+	go heartbeat.HeartBeatDeamon()
 	// 定期更新cookies信息
 	go cookies.CookiesDaemon()
 

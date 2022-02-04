@@ -84,13 +84,13 @@ func Init() bool {
 
 	// 初始化redis
 	log.Println("Connecting to redis:", common.GetRedisAddr())
-	redisConn := DB.RedisInit()
-	if redisConn == nil {
-		log.Println("Connect to redis failed.Please check if redis reachable.")
+	err = DB.RedisInit()
+	if err != nil {
+		log.Panicln("Connect to redis failed.Please check if redis reachable.")
 		return false
 	}
 	log.Println("Connect to redis success.")
-	go heartbeat.HeartBeatTimer(redisConn)
+	go heartbeat.HeartBeatTimer()
 
 	// 注册自己的ip到handler中
 	/*success := false

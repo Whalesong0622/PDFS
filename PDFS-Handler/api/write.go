@@ -4,6 +4,7 @@ import (
 	"PDFS-Handler/DB"
 	"PDFS-Handler/common"
 	"PDFS-Handler/errorcode"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -15,6 +16,7 @@ import (
 )
 
 const BlockSize int = 64000000 //64MB
+const readTimeout int = 60     // 一分钟超时
 
 func Write(username string, path string, conn net.Conn) {
 	Filepath := strings.Join([]string{common.GetNamespacePath(), username, path}, "/")
@@ -52,15 +54,18 @@ func Write(username string, path string, conn net.Conn) {
 	cur := 0 // 分块编号
 	wc := sync.WaitGroup{}
 
-	//记录文件字节大小
+	conn.SetReadDeadline(time.Now().Add(time.Second * time.Duration(readTimeout)))
 	var sum int
 	for {
-		n, _ := conn.Read(buf)
+		n, err := conn.Read(buf)
 		sum += n
-		// log.Println(sum)
-		if n == 0 {
+		if n == 0 || err == io.EOF {
 			log.Printf("Receive file %s from %s ended!", filename, conn.RemoteAddr().String())
 			break
+		}
+		if err != nil {
+			log.Println("Error occur when read conn.", err)
+			return
 		}
 		byteStream = append(byteStream, buf[:n]...)
 		if len(byteStream) >= BlockSize {

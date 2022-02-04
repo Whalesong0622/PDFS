@@ -6,25 +6,23 @@ import (
 	"PDFS-Handler/cookies"
 	"PDFS-Handler/errorcode"
 	"log"
-	"os"
+	"net"
 )
 
-func DelUser(username string, passwd string, cookie []byte) byte {
+func DelUser(username string, passwd string, cookie []byte, conn net.Conn) {
 	reply := DB.DelUserToDB(username, passwd)
 	if reply != errorcode.OK {
 		log.Println("DB not found user:", username)
-		return reply
+		conn.Write(common.ByteToBytes(errorcode.USER_NOT_EXIST))
+		return
 	}
 
 	namespacePath := common.GetNamespacePath() + "/" + username
 	if common.IsDir(namespacePath) {
-		// DELDIR(namespacePath)递归命名空间并删除所有文件，还没有实现，后面补
-		err := os.RemoveAll(namespacePath)
-		log.Println("os.remove", namespacePath, "err:", err)
 		cookies.DelectCookie(cookie)
-		return errorcode.OK
+		DelDir(username, "/", conn)
 	} else {
 		log.Println(namespacePath, "not exist")
-		return errorcode.USER_NOT_EXIST
+		conn.Write(common.ByteToBytes(errorcode.USER_NOT_EXIST))
 	}
 }

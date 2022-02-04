@@ -11,6 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var MySQLDB *sql.DB
 var MySQLConfig *common.MySQLConfigStruct
 
 var createTableSQL = "CREATE TABLE if not exists ? (`username` varchar(25) DEFAULT '' UNIQUE,`passwd` varchar(80) DEFAULT '',PRIMARY KEY (`username`))ENGINE=InnoDB DEFAULT CHARSET=utf8;"
@@ -25,8 +26,16 @@ func MySQLInit() {
 	if err != nil {
 		log.Println("Error occur when create database", MySQLConfig.DBName, err)
 	}
-	_, _ = db.Exec("USE " + MySQLConfig.DBName)
+	db, err = MySQLConnect(MySQLConfig.DBName)
+	if err != nil {
+		log.Println("Error occur when connecting to MySQL:", err)
+	}
 	_, _ = db.Exec(createTableSQL, MySQLConfig.TableName)
+	MySQLDB = db
+}
+
+func GetMySQLDB() *sql.DB {
+	return MySQLDB
 }
 
 func MySQLConnect(DatabaseName string) (*sql.DB, error) {
@@ -43,12 +52,7 @@ func MySQLConnect(DatabaseName string) (*sql.DB, error) {
 }
 
 func NewUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting to MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	if IsUserExist(username) {
 		log.Println("Error occur when creating new user,user already exist.")
@@ -57,7 +61,7 @@ func NewUserToDB(username string, passwd string) byte {
 
 	//执行SQL语句
 	SQL := "insert into PDFS_USER_TABLE(username,passwd)values (?,?)"
-	_, err = db.Exec(SQL, username, common.ToSha(passwd))
+	_, err := db.Exec(SQL, username, common.ToSha(passwd))
 	if err != nil {
 		log.Println("Error occur when executive new user:", err)
 		return errorcode.UNKNOWN_ERR
@@ -68,12 +72,7 @@ func NewUserToDB(username string, passwd string) byte {
 }
 
 func DelUserToDB(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	if !IsUserExist(username) {
 		log.Println("Error occur when deleting user,", username, "not exist.")
@@ -85,23 +84,18 @@ func DelUserToDB(username string, passwd string) byte {
 		return check
 	}
 	SQL := "delete from PDFS_USER_TABLE where username = ?"
-	_, err = db.Exec(SQL, username)
+	_, err := db.Exec(SQL, username)
 	if err != nil {
 		log.Println("Error occur when deleting user", username, ":", err)
 		return errorcode.UNKNOWN_ERR
 	}
-	log.Println("Delete user", username, "successfully.")
+	log.Println("Delete user", username, "from mysql successfully.")
 	return errorcode.OK
 
 }
 
 func PasswdCheck(username string, passwd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		log.Println("Error occur when connecting To MySQL err:", err)
-		return errorcode.UNKNOWN_ERR
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	exist := IsUserExist(username)
 	if !exist {
@@ -114,7 +108,7 @@ func PasswdCheck(username string, passwd string) byte {
 	rows := db.QueryRow(SQL, args[0])
 	var name string
 	var tb_passwd string
-	err = rows.Scan(&name, &tb_passwd)
+	err := rows.Scan(&name, &tb_passwd)
 
 	if err != nil {
 		return errorcode.UNKNOWN_ERR
@@ -129,12 +123,7 @@ func PasswdCheck(username string, passwd string) byte {
 }
 
 func ChangePasswd(username string, newpasswd string) byte {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		fmt.Println(err)
-		return errorcode.CHANGE_PASSWD_FAILED
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 
 	SQL := "update PDFS_USER_TABLE set passwd = ? where username = ?"
 	args := []string{common.ToSha(newpasswd), username}
@@ -155,19 +144,12 @@ func ChangePasswd(username string, newpasswd string) byte {
 }
 
 func IsUserExist(username string) bool {
-	db, err := MySQLConnect("mysql")
-	if err != nil {
-		fmt.Println(err)
-		return false
-	}
-	defer db.Close()
+	db := GetMySQLDB()
 	rows := db.QueryRow("select * from PDFS_USER_TABLE where username = ?", username)
-	if err != nil {
-		return false
-	}
+
 	var name string
 	var tb_passwd string
-	err = rows.Scan(&name, &tb_passwd)
+	err := rows.Scan(&name, &tb_passwd)
 	if name == "" || err != nil {
 		return false
 	} else {

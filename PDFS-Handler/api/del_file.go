@@ -58,6 +58,7 @@ func DelFile(username string, path string, conn net.Conn) {
 			wc.Add(1)
 			go DelToServer(blockNames, ip, &wc)
 		}
+		DB.DelKey(blockNames)
 	}
 	wc.Wait()
 	end := time.Now().Local().UnixNano() / (1000 * 1000)
