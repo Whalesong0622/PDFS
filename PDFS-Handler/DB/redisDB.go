@@ -64,6 +64,16 @@ func GetFileBlockNums(blockname string) (int, error) {
 	return ret, nil
 }
 
+func GetBlockSize(blockname string) (int, error) {
+	conn := GetRedisConn()
+	reply, err := redis.String(conn.Do("HGET", blockname, "size"))
+	if err != nil {
+		return 0, err
+	}
+	ret, _ := strconv.Atoi(reply)
+	return ret, nil
+}
+
 // 获取每个分块的iplist,并将过期的地址删除
 func GetBlockIpList(blocknames string) ([]string, error) {
 	conn := GetRedisConn()

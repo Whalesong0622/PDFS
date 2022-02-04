@@ -1,8 +1,6 @@
 package common
 
 import (
-	"bytes"
-	"encoding/binary"
 	"math/rand"
 	"os"
 	"time"
@@ -21,13 +19,6 @@ func IsFile(path string) bool {
 func ByteToBytes(bt byte) (bytes []byte) {
 	bytes = append(bytes, bt)
 	return bytes
-}
-
-func BytesToInt(bys []byte) int {
-	bytebuff := bytes.NewBuffer(bys)
-	var data int64
-	binary.Read(bytebuff, binary.BigEndian, &data)
-	return int(data)
 }
 
 //生成count个[start,end)结束的不重复的随机数

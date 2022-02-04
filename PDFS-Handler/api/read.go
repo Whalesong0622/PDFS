@@ -38,11 +38,17 @@ func Read(username string, path string, conn net.Conn) {
 		_, _ = conn.Write(common.ByteToBytes(errorcode.UNKNOWN_ERR))
 		return
 	}
-	log.Println(blockName, "have", blockNums, "nums.")
+	blockSize, err := DB.GetBlockSize(blockName)
+	if err != nil {
+		log.Println("Get file block size from redis err:", err)
+		_, _ = conn.Write(common.ByteToBytes(errorcode.UNKNOWN_ERR))
+		return
+	}
+	log.Println(blockName, "have", blockNums, "nums,size", blockSize)
 
 	ReturnIpList := make([]byte, 0)
 	ReturnIpList = append(ReturnIpList, 11)
-	ReturnIpList = append(ReturnIpList, []byte(blockName)...)
+	ReturnIpList = append(ReturnIpList, common.IntToBytes(blockSize)...)
 	ReturnIpList = append(ReturnIpList, byte(blockNums))
 
 	// 计时器
