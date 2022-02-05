@@ -48,8 +48,8 @@ func Read(username string, path string, conn net.Conn) {
 
 	ReturnIpList := make([]byte, 0)
 	ReturnIpList = append(ReturnIpList, 11)
+	ReturnIpList = append(ReturnIpList, []byte(blockName)...)
 	ReturnIpList = append(ReturnIpList, common.IntToBytes(blockSize)...)
-	ReturnIpList = append(ReturnIpList, byte(blockNums))
 
 	// 计时器
 	now := time.Now()
