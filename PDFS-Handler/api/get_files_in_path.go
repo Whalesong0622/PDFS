@@ -9,7 +9,6 @@ import (
 )
 
 func GetFilesInPath(username string, path string, conn net.Conn) {
-	defer conn.Close()
 	absPath := common.GetNamespacePath() + "/" + username + path
 	log.Println("Get files in abspath:", absPath)
 
