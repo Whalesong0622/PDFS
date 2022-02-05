@@ -62,7 +62,7 @@ func NewUserToDB(username string, passwd string) byte {
 	}
 
 	//执行SQL语句
-	SQL := "insert into PDFS_USER_TABLE(username,passwd)values (?,?)"
+	SQL := "insert into " + MySQLConfig.TableName + "(username,passwd)values (?,?)"
 	_, err := db.Exec(SQL, username, common.ToSha(passwd))
 	if err != nil {
 		log.Println("Error occur when executive new user:", err)
@@ -85,7 +85,7 @@ func DelUserToDB(username string, passwd string) byte {
 	if check != errorcode.OK {
 		return check
 	}
-	SQL := "delete from PDFS_USER_TABLE where username = ?"
+	SQL := "delete from " + MySQLConfig.TableName + " where username = ?"
 	_, err := db.Exec(SQL, username)
 	if err != nil {
 		log.Println("Error occur when deleting user", username, ":", err)
@@ -104,7 +104,7 @@ func PasswdCheck(username string, passwd string) byte {
 		fmt.Println("Check user passwd failed,user", username, "not exist.")
 		return errorcode.USER_NOT_EXIST
 	}
-	SQL := "select * from PDFS_USER_TABLE where username = ?"
+	SQL := "select * from " + MySQLConfig.TableName + " where username = ?"
 	args := []string{username}
 
 	rows := db.QueryRow(SQL, args[0])
@@ -127,7 +127,7 @@ func PasswdCheck(username string, passwd string) byte {
 func ChangePasswd(username string, newpasswd string) byte {
 	db := GetMySQLDB()
 
-	SQL := "update PDFS_USER_TABLE set passwd = ? where username = ?"
+	SQL := "update " + MySQLConfig.TableName + " set passwd = ? where username = ?"
 	args := []string{common.ToSha(newpasswd), username}
 
 	row, err := db.Exec(SQL, args[0], args[1])
@@ -147,7 +147,7 @@ func ChangePasswd(username string, newpasswd string) byte {
 
 func IsUserExist(username string) bool {
 	db := GetMySQLDB()
-	rows := db.QueryRow("select * from PDFS_USER_TABLE where username = ?", username)
+	rows := db.QueryRow("select * from "+MySQLConfig.TableName+" where username = ?", username)
 
 	var name string
 	var tb_passwd string
